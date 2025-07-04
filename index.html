@@ -1,35 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dmitry Pavlov</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dmitry Pavlov - About Me</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .photo-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background-color: #ddd;
+            border: 5px solid white;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('placeholder-user.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .photo-circle span {
+            display: none;
+            color: #777;
+            font-size: 14px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Main Content */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #000DFF;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #6B73FF 0%, #000DFF 100%);
+            border-radius: 3px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .interest-tag {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+            background-color: #333;
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 30px 15px;
+            }
+
+            .photo-circle {
+                width: 120px;
+                height: 120px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .content {
+                padding: 0 10px;
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 25px 10px;
+            }
+
+            .photo-circle {
+                width: 100px;
+                height: 100px;
+                border-width: 3px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <img src="https://via.placeholder.com/250 " alt="Dmitry Pavlov" id="profile-pic" />
-    <h1>Hi, I'm Dmitry Pavlov 👋</h1>
-    <p>I’m a student at a Seminary and live in Pechory, Pskov region, Russia.</p>
+    <header>
+        <div class="photo-circle">
+            <span>Your Photo</span>
+        </div>
+        <h1>Dmitry Pavlov</h1>
+        <p class="subtitle">Seminary Student & Mathematics Enthusiast</p>
+        <p class="location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+            </svg>
+            Pechory, Pskov Oblast, Russia
+        </p>
+    </header>
 
-    <div class="interests">
-      <div class="chip">🧮 Number Theory</div>
-      <div class="chip">🩺 Chinese Acupuncture</div>
+    <div class="container">
+        <main class="content">
+            <section class="card">
+                <h2>About Me</h2>
+                <p>Hello! I'm Dmitry Pavlov, a passionate seminary student with deep interests in both spiritual studies and mathematical theories. Currently residing in the historic town of Pechory in Russia's Pskov region, I find joy in exploring the connections between faith, numbers, and traditional healing practices.</p>
+                <p>My academic journey at the seminary has not only strengthened my theological understanding but also provided me with a unique perspective on how mathematical principles can intersect with spiritual concepts.</p>
+            </section>
+
+            <section class="card">
+                <h2>My Interests</h2>
+                <p>My intellectual pursuits span across several fascinating domains:</p>
+                
+                <div class="interests">
+                    <span class="interest-tag">Number Theory</span>
+                    <span class="interest-tag">Chinese Acupuncture</span>
+                    <span class="interest-tag">Theology</span>
+                    <span class="interest-tag">Mathematics</span>
+                    <span class="interest-tag">Traditional Medicine</span>
+                </div>
+
+                <p>I'm particularly fascinated by number theory - the study of integers and their properties. The beauty of prime numbers and mathematical patterns captivates my analytical mind.</p>
+                <p>Parallel to this, I've developed a profound interest in Chinese acupuncture, exploring how this ancient healing art balances energy flows in the human body. The precision and philosophy behind acupuncture resonate with my mathematical mindset.</p>
+            </section>
+
+            <section class="card">
+                <h2>Current Focus</h2>
+                <p>As I progress through my seminary education, I'm continuously seeking ways to integrate my diverse interests. I believe there are meaningful connections to be discovered between numerical patterns, spiritual concepts, and holistic healing approaches.</p>
+                <p>When I'm not engaged in theological studies, you might find me solving complex mathematical problems or studying meridians and acupuncture points in traditional Chinese medicine.</p>
+            </section>
+        </main>
     </div>
 
-    <p>
-      My heart lies in two worlds:
-      <ul>
-        <li><strong>Number Theory:</strong> exploring the hidden patterns behind prime numbers and functions like Riemann's zeta.</li>
-        <li><strong>Traditional Chinese Acupuncture:</strong> learning and practicing the ancient art of healing with needles.</li>
-      </ul>
-    </p>
-
     <footer>
-      <p>📍 Currently deepening my knowledge in mathematics and traditional medicine.</p>
-      <p>📬 Feel free to contact me via email: <a href="mailto:your_email@example.com">your_email@example.com</a></p>
+        <p>© 2023 Dmitry Pavlov. All rights reserved.</p>
     </footer>
-  </div>
 </body>
 </html>
