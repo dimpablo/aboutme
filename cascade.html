@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cascade Theorem Visualization</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #f0f0f0; }
+        canvas { display: block; }
+        #controls { position: absolute; top: 10px; left: 10px; }
+        button { padding: 8px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <canvas id="riemannCanvas"></canvas>
+    <div id="controls">
+        <button id="resetBtn">Reset</button>
+        <button id="triggerBtn">Start the cascade</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('riemannCanvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+        const triggerBtn = document.getElementById('triggerBtn');
+
+        // Настройки
+        const WIDTH = window.innerWidth;
+        const HEIGHT = window.innerHeight;
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+
+        const CRITICAL_LINE = HEIGHT / 2;
+        const ZERO_RADIUS = 8;
+        const ZEROS_COUNT = 50;
+        const COLORS = {
+            normal: '#3498db',
+            rogue: '#e74c3c',
+            cascade: '#9b59b6'
+        };
+
+        // Модель данных
+        let zeros = [];
+        let cascadeActive = false;
+        let animationId = null;
+
+        // Инициализация нулей
+        function initZeros() {
+            zeros = [];
+            for (let i = 0; i < ZEROS_COUNT; i++) {
+                zeros.push({
+                    x: (i + 1) * (WIDTH / (ZEROS_COUNT + 1)),
+                    y: CRITICAL_LINE,
+                    radius: ZERO_RADIUS,
+                    color: COLORS.normal,
+                    pair: null,
+                    isRogue: false
+                });
+            }
+        }
+
+        // Рисуем сцену
+        function draw() {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            
+            // Критическая линия
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, CRITICAL_LINE);
+            ctx.lineTo(WIDTH, CRITICAL_LINE);
+            ctx.stroke();
+            
+            // Подписи
+            ctx.fillStyle = '#000';
+            ctx.font = '16px Arial';
+            ctx.fillText('Re(s) = 1/2', 20, CRITICAL_LINE - 10);
+            
+            // Нули
+            zeros.forEach(zero => {
+                ctx.beginPath();
+                ctx.arc(zero.x, zero.y, zero.radius, 0, Math.PI * 2);
+                ctx.fillStyle = zero.color;
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.stroke();
+                
+                // Связи для парных нулей
+                if (zero.pair) {
+                    ctx.beginPath();
+                    ctx.moveTo(zero.x, zero.y);
+                    ctx.lineTo(zero.pair.x, zero.pair.y);
+                    ctx.strokeStyle = zero.color;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            });
+            
+            // Легенда
+            ctx.fillStyle = COLORS.normal;
+            ctx.fillText('Normal zeros', WIDTH - 200, 30);
+            ctx.fillStyle = COLORS.rogue;
+            ctx.fillText('Wrong zeros', WIDTH - 200, 60);
+            ctx.fillStyle = COLORS.cascade;
+            ctx.fillText('Cascade zeros', WIDTH - 200, 90);
+        }
+
+        // Создаем "плохой" нуль и каскад
+        function triggerCascade() {
+            if (cascadeActive) return;
+            cascadeActive = true;
+            
+            // Выбираем случайный нуль для отклонения
+            const rogueIndex = Math.floor(ZEROS_COUNT / 2);
+            zeros[rogueIndex].isRogue = true;
+            zeros[rogueIndex].color = COLORS.rogue;
+            
+            // Анимация отклонения
+            let deviationProgress = 0;
+            const deviationY = CRITICAL_LINE - 100;
+            
+            function animateDeviation() {
+                deviationProgress += 0.02;
+                zeros[rogueIndex].y = CRITICAL_LINE - (deviationY * deviationProgress);
+                
+                // Когда отклонение завершено, создаем каскад
+                if (deviationProgress >= 1) {
+                    createCascade(rogueIndex);
+                    return;
+                }
+                
+                draw();
+                animationId = requestAnimationFrame(animateDeviation);
+            }
+            
+            animateDeviation();
+        }
+
+        // Создаем каскад парных нулей
+        function createCascade(rogueIndex) {
+            const rogueZero = zeros[rogueIndex];
+            
+            // Создаем зеркальный нуль
+            const mirrorZero = {
+                x: rogueZero.x,
+                y: 2 * CRITICAL_LINE - rogueZero.y,
+                radius: ZERO_RADIUS,
+                color: COLORS.cascade,
+                pair: rogueZero,
+                isRogue: false
+            };
+            
+            zeros.push(mirrorZero);
+            rogueZero.pair = mirrorZero;
+            
+            // Анимация распространения каскада
+            let cascadeRadius = 0;
+            const maxRadius = Math.max(WIDTH, HEIGHT);
+            
+            function animateCascade() {
+                cascadeRadius += 2;
+                
+                // Добавляем новые нули на краю волны
+                if (cascadeRadius % 40 === 0) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const newX = rogueZero.x + cascadeRadius * Math.cos(angle);
+                    const newY = rogueZero.y + cascadeRadius * Math.sin(angle);
+                    
+                    if (newX > 0 && newX < WIDTH && newY > 0 && newY < HEIGHT) {
+                        const newZero = {
+                            x: newX,
+                            y: newY,
+                            radius: ZERO_RADIUS,
+                            color: COLORS.cascade,
+                            pair: null,
+                            isRogue: false
+                        };
+                        zeros.push(newZero);
+                    }
+                }
+                
+                // Останавливаем анимацию, когда волна выходит за пределы
+                if (cascadeRadius < maxRadius) {
+                    draw();
+                    animationId = requestAnimationFrame(animateCascade);
+                } else {
+                    cascadeActive = false;
+                }
+            }
+            
+            animateCascade();
+        }
+
+        // Сброс анимации
+        function resetAnimation() {
+            cancelAnimationFrame(animationId);
+            cascadeActive = false;
+            initZeros();
+            draw();
+        }
+
+        // Инициализация
+        initZeros();
+        draw();
+        
+        // Обработчики событий
+        triggerBtn.addEventListener('click', triggerCascade);
+        resetBtn.addEventListener('click', resetAnimation);
+    </script>
+</body>
+</html>
