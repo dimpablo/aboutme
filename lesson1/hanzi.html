@@ -24,6 +24,7 @@
     @supports (padding: env(safe-area-inset-bottom)) { body { padding-bottom: calc(10px + env(safe-area-inset-bottom)); } }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+  <script type="module" src="../auth.js"></script>
 </head>
 <body>
   <div class="header">
@@ -62,11 +63,16 @@
 
     function mountChar(ch) {
       board.innerHTML=''; writer = HanziWriter.create('char', ch, { width: board.clientWidth, height: board.clientHeight, showCharacter:false, showOutline:false, showHintAfterMisses:1, highlightOnComplete:true, padding:8 });
-      writer.quiz({ onComplete: function(){ msgEl.textContent='✅ Отлично!'; btnNext.disabled=false; currentIndex++; setProgress(); if (currentIndex >= queue.length) { statusEl.textContent='🎉 Все иероглифы пройдены!'; btnNext.disabled=true; btnSkip.disabled=true; setTimeout(()=>{ window.location.href='../'; }, 3500); } } });
+      writer.quiz({ onComplete: function(){ msgEl.textContent='✅ Отлично!'; btnNext.disabled=false; const PKEY='dk_points'; const gp=()=>Number(localStorage.getItem(PKEY)||'0')|0; const sp=v=>localStorage.setItem(PKEY,String(v)); sp(gp()+1); currentIndex++; setProgress(); if (currentIndex >= queue.length) { statusEl.textContent='🎉 Все иероглифы пройдены!'; btnNext.disabled=true; btnSkip.disabled=true; setTimeout(()=>{ window.location.href='../'; }, 3500); } } });
       statusEl.textContent = `Пишите: ${ch}`; btnNext.disabled = true; msgEl.textContent='';
     }
 
-    btnSkip.onclick = () => { if (currentIndex < queue.length) { currentIndex++; setProgress(); if (currentIndex < queue.length) mountChar(queue[currentIndex]); } };
+    // points helpers
+    const PKEY = 'dk_points';
+    const getPoints = () => Number(localStorage.getItem(PKEY) || '0')|0;
+    const setPoints = (v) => localStorage.setItem(PKEY, String(v));
+
+    btnSkip.onclick = () => { setPoints(getPoints()-1); if (currentIndex < queue.length) { currentIndex++; setProgress(); if (currentIndex < queue.length) mountChar(queue[currentIndex]); } };
     btnNext.onclick = () => { if (currentIndex < queue.length) { mountChar(queue[currentIndex]); } };
 
     function tryFullscreen(){ const el=document.documentElement; const req=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen; if (req){ try{req.call(el);}catch(_){}} window.removeEventListener('click', tryFullscreen, {capture:true}); }

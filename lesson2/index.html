@@ -77,6 +77,7 @@
     .message { margin-top: 10px; text-align: center; font-weight: 600; }
     .success { color: #2e7d32; }
     .error { color: #c62828; }
+    .matched { background: #e8f5e9 !important; border-color: #2e7d32 !important; color: #2e7d32; }
 
     .word-pool, .drop-area {
       min-height: 36px; padding: 6px; display: flex; flex-wrap: wrap; gap: 6px; border: 1px dashed #b0bec5; border-radius: 8px; background: #fbfdff; justify-content: center;
@@ -99,6 +100,7 @@
       body { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
     }
   </style>
+  <script type="module" src="../auth.js"></script>
 </head>
 <body>
   <div class="header">
@@ -184,6 +186,11 @@
     const taskContainer = document.getElementById('task-container');
     const nextBtn = document.getElementById('next-btn');
 
+    // points helpers
+    const PKEY = 'dk_points';
+    const getPoints = () => Number(localStorage.getItem(PKEY) || '0')|0;
+    const setPoints = (v) => localStorage.setItem(PKEY, String(v));
+
     function updateProgress() {
       const pct = state.tasks.length ? (state.currentIndex / state.tasks.length) * 100 : 0;
       progressBar.style.width = pct + '%';
@@ -230,7 +237,7 @@
       const checkBtn = primaryButton('Проверить', () => {
         if (!selected) { result.textContent = 'Выберите вариант.'; result.className = 'message error'; return; }
         const ok = !!selected.correct;
-        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; enableNext(); }
+        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; setPoints(getPoints()+1); enableNext(); }
         else { result.textContent = '❌ Неверно.'; result.className = 'message error'; }
       });
 
@@ -266,7 +273,7 @@
       const result = el('div', 'message');
       const checkBtn = primaryButton('Проверить', () => {
         const ok = (task.items || []).every(item => !!selected.get(item.text) === !!item.correct);
-        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; enableNext(); }
+        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; setPoints(getPoints()+1); enableNext(); }
         else { result.textContent = '❌ Проверьте выбор.'; result.className = 'message error'; }
       });
 
@@ -293,7 +300,7 @@
       const checkBtn = primaryButton('Проверить', () => {
         const current = Array.from(drop.children).filter(n => n.dataset && n.dataset.token).map(n => n.dataset.token);
         const ok = (task.accepted || []).some(seq => arraysEqual(seq, current));
-        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; enableNext(); }
+        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; setPoints(getPoints()+1); enableNext(); }
         else { result.textContent = '❌ Попробуйте снова.'; result.className = 'message error'; }
       });
 
@@ -346,11 +353,12 @@
         selLeft.classList.add(effect); selRight.classList.add(effect);
         setTimeout(() => { selLeft.classList.remove(effect); selRight.classList.remove(effect); }, 350);
         if (ok) {
-          selLeft.classList.add('selected'); selRight.classList.add('selected');
+          selLeft.classList.add('matched'); selRight.classList.add('matched');
           selLeft.style.pointerEvents = 'none'; selRight.style.pointerEvents = 'none';
           matched++;
           if (matched >= (task.pairs || []).length) {
             wrapper.appendChild(el('div', 'message success', '✅ Все верно!'));
+            setPoints(getPoints()+1);
             enableNext();
           }
         }
@@ -382,14 +390,14 @@
       });
 
       const result = el('div', 'message');
-      const btn = primaryButton('Проверить', () => {
-        const rows = Array.from(wrapper.querySelectorAll('.pair'));
-        const allFilled = rows.every(r => r.querySelector('select').value);
-        if (!allFilled) { result.textContent = 'Заполните все.'; result.className = 'message error'; return; }
-        const ok = rows.every(r => r.querySelector('select').value === r.dataset.correct);
-        if (ok) { result.textContent = '✅ Все верно!'; result.className = 'message success'; enableNext(); }
-        else { result.textContent = '❌ Проверьте пары.'; result.className = 'message error'; }
-      });
+              const btn = primaryButton('Проверить', () => {
+          const rows = Array.from(wrapper.querySelectorAll('.pair'));
+          const allFilled = rows.every(r => r.querySelector('select').value);
+          if (!allFilled) { result.textContent = 'Заполните все.'; result.className = 'message error'; return; }
+          const ok = rows.every(r => r.querySelector('select').value === r.dataset.correct);
+          if (ok) { result.textContent = '✅ Все верно!'; result.className = 'message success'; setPoints(getPoints()+1); enableNext(); }
+          else { result.textContent = '❌ Проверьте пары.'; result.className = 'message error'; }
+        });
       wrapper.appendChild(btn);
       wrapper.appendChild(result);
       return wrapper;
@@ -411,7 +419,7 @@
       const checkBtn = primaryButton('Проверить', () => {
         const current = Array.from(drop.children).filter(n => n.dataset && n.dataset.token).map(n => n.dataset.token);
         const ok = arraysEqual(current, task.expected || []);
-        if (ok) { result.textContent = '✅ Правильно!'; result.className = 'message success'; enableNext(); }
+        if (ok) { result.textContent = '✅ Правильно!'; result.className = 'message success'; setPoints(getPoints()+1); enableNext(); }
         else { result.textContent = '❌ Попробуйте снова.'; result.className = 'message error'; }
       });
 

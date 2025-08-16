@@ -14,6 +14,15 @@
       background-color: #f8f9fa;
       font-family: Verdana, sans-serif;
     }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #1976d2; color: #fff; position: sticky; top: 0; z-index: 100;
+    }
+    .brand { font-weight: bold; }
+    .userbox { display: flex; align-items: center; gap: 10px; }
+    .points { background: rgba(255,255,255,.2); padding: 4px 8px; border-radius: 999px; font-weight: bold; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: #fff; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    #loginBtn { background:#fff; color:#1976d2; border:none; padding:6px 10px; border-radius:8px; font-weight:bold; cursor:pointer; }
 
     /* КРУЖОК 150x150 */
     .unit-circle {
@@ -84,9 +93,17 @@
       border-collapse: collapse;
     }
   </style>
+  <script type="module" src="./auth.js"></script>
 </head>
 <body>
-
+  <div class="topbar">
+    <div class="brand">Древнекитайский</div>
+    <div class="userbox">
+      <div class="points" id="points">0 баллов</div>
+      <button id="loginBtn">Войти</button>
+      <div class="avatar" id="avatar" style="display:none"><img src="https://ui-avatars.com/api/?name=G&background=1976d2&color=fff" alt="user" /></div>
+    </div>
+  </div>
 
   <!-- Основная таблица -->
   <table cellpadding="0" cellspacing="0">
@@ -151,8 +168,14 @@
     </tr>
   </table>
 
-  <!-- Скрипт анимации -->
+  <!-- Скрипт анимации и очков -->
   <script>
+    // Временное локальное хранилище очков; dashboard подключим позже
+    const PKEY = 'dk_points';
+    function getPoints(){ return Number(localStorage.getItem(PKEY) || '0')|0; }
+    function setPoints(v){ localStorage.setItem(PKEY, String(v)); document.getElementById('points').textContent = v + ' баллов'; }
+    setPoints(getPoints());
+
     // 🌊 Просторная синусоида
     const amplitude = 200;    // амплитуда движения
     const frequency = 0.006;  // частота волны

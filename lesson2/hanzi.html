@@ -37,6 +37,7 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+  <script type="module" src="../auth.js"></script>
 </head>
 <body>
   <div class="header">
@@ -109,6 +110,9 @@
         onComplete: function() {
           msgEl.textContent = '✅ Отлично!';
           btnNext.disabled = false;
+          // +1 балл за прохождение
+          const PKEY='dk_points'; const gp=()=>Number(localStorage.getItem(PKEY)||'0')|0; const sp=v=>localStorage.setItem(PKEY,String(v));
+          sp(gp()+1);
           currentIndex++;
           setProgress();
           if (currentIndex >= queue.length) {
@@ -123,7 +127,13 @@
       msgEl.textContent = '';
     }
 
+    // points helpers
+    const PKEY = 'dk_points';
+    const getPoints = () => Number(localStorage.getItem(PKEY) || '0')|0;
+    const setPoints = (v) => localStorage.setItem(PKEY, String(v));
+
     btnSkip.addEventListener('click', () => {
+      setPoints(getPoints()-1);
       if (currentIndex < queue.length) {
         currentIndex++;
         setProgress();
