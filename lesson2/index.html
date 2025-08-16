@@ -121,6 +121,59 @@
       currentIndex: 0
     };
 
+    // HANZI scheduling
+    let hanziQueue = [];
+    let hanziCountTarget = 0;
+
+    async function buildHanziQueue(theoryUrl, targetCount) {
+      hanziCountTarget = Math.max(0, targetCount | 0);
+      if (hanziCountTarget === 0) return [];
+      const res = await fetch(theoryUrl + '?_=' + Date.now());
+      const html = await res.text();
+      const tmp = document.createElement('div'); tmp.innerHTML = html;
+      const items = Array.from(tmp.querySelectorAll('.char-list .char-item > span'));
+      const lessonChars = [];
+      items.forEach(span => {
+        const text = span.childNodes[0]?.textContent || span.textContent || '';
+        const ch = (text.match(/[\u4e00-\u9fff\uf900-\ufaff]/) || [null])[0];
+        if (ch) lessonChars.push(ch);
+      });
+      const uniq = [];
+      const seen = new Set();
+      lessonChars.forEach(c => { if (!seen.has(c)) { seen.add(c); uniq.push(c); } });
+      if (!uniq.length) return [];
+      const picks = [];
+      let pool = shuffle(uniq);
+      while (picks.length < hanziCountTarget) {
+        if (!pool.length) pool = shuffle(uniq);
+        const ch = pool.pop();
+        if (!picks.includes(ch)) picks.push(ch);
+      }
+      return picks;
+    }
+
+    function injectHanziTasks(baseTasks, hanziChars) {
+      if (!hanziChars || !hanziChars.length) return baseTasks;
+      // создаем псевдо-задания для Hanzi, тип: hanzi_draw
+      const hanziTasks = hanziChars.map((ch, i) => ({
+        id: 'hanzi-' + i + '-' + ch,
+        type: 'hanzi_draw',
+        prompt: 'Нарисуйте иероглиф',
+        oracle: ch,
+        pinyin: '',
+        question: ''
+      }));
+      const mixed = [...baseTasks];
+      // равномерно вставим hanzi задачи в поток
+      const step = Math.max(1, Math.floor(mixed.length / (hanziTasks.length + 1)));
+      let insertIndex = step;
+      hanziTasks.forEach(ht => {
+        mixed.splice(Math.min(insertIndex, mixed.length), 0, ht);
+        insertIndex += step + 1;
+      });
+      return mixed;
+    }
+
     const statusEl = document.getElementById('status');
     const progressBar = document.getElementById('progress-bar');
     const taskContainer = document.getElementById('task-container');
@@ -439,6 +492,7 @@
         case 'select_mapping': content = renderSelectMapping(task); break;
         case 'arrange_chars': content = renderArrangeChars(task); break;
         case 'multi_group_single': content = renderMultiGroupSingle(task); break;
+        case 'hanzi_draw': content = renderHanziDraw(task); break;
         default:
           content = el('div', null, 'Неизвестный тип задания: ' + task.type);
       }
@@ -502,6 +556,57 @@
       }
     });
 
+    function renderHanziDraw(task) {
+      const wrapper = document.createElement('div');
+      if (task.prompt) wrapper.appendChild(el('div', 'prompt', task.prompt));
+      const oracle = task.oracle || '';
+      wrapper.appendChild(el('div', 'oracle', oracle));
+      const canvas = document.createElement('div');
+      canvas.id = 'hanzi-canvas';
+      canvas.style.width = '100%';
+      canvas.style.maxWidth = '360px';
+      canvas.style.height = '360px';
+      canvas.style.margin = '10px auto';
+      canvas.style.border = '1px solid #e0e0e0';
+      canvas.style.borderRadius = '8px';
+      wrapper.appendChild(canvas);
+
+      const result = el('div', 'message');
+
+      // Lazy-load HanziWriter if not present
+      function ensureHanziWriter() {
+        return new Promise((resolve) => {
+          if (window.HanziWriter) return resolve();
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js';
+          s.onload = () => resolve();
+          document.head.appendChild(s);
+        });
+      }
+
+      ensureHanziWriter().then(() => {
+        const writer = HanziWriter.create('hanzi-canvas', oracle, {
+          width: canvas.clientWidth,
+          height: canvas.clientHeight,
+          showCharacter: false,
+          showOutline: false,
+          showHintAfterMisses: 1,
+          highlightOnComplete: true,
+          padding: 8
+        });
+        writer.quiz({
+          onComplete: function() {
+            result.textContent = '✅ Готово!';
+            result.className = 'message success';
+            enableNext();
+          }
+        });
+      });
+
+      wrapper.appendChild(result);
+      return wrapper;
+    }
+
     // Try fullscreen on first user interaction (Android PWA friendly)
     function tryFullscreen() {
       const el = document.documentElement;
@@ -520,7 +625,14 @@
         }
         const res = await fetch('./tasks.json?_=' + Date.now());
         const data = await res.json();
-        state.tasks = shuffle(data.tasks || []);
+        const baseTasks = shuffle(data.tasks || []);
+        const numberOfHanzi = Number(data.number_of_hanzi || 0) | 0;
+        if (numberOfHanzi > 0) {
+          hanziQueue = await buildHanziQueue('./theory.html', numberOfHanzi);
+          state.tasks = injectHanziTasks(baseTasks, hanziQueue);
+        } else {
+          state.tasks = baseTasks;
+        }
         setMessage(`✅ Найдено ${state.tasks.length} заданий.`);
         renderTask(state.tasks[0]);
       } catch (e) {

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Конструктор tasks.json</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: #f8fafc; color: #1f2937; display: flex; flex-direction: column; }
+    header { padding: 12px 14px; background: #0ea5e9; color: #fff; }
+    main { flex: 1; display: grid; grid-template-columns: 280px 1fr; gap: 12px; padding: 12px; }
+    aside { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; }
+    section { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; overflow: auto; }
+    h1 { font-size: 18px; margin: 0; }
+    h2 { font-size: 16px; margin: 8px 0; }
+    .btn { display: inline-block; background: #0284c7; color: #fff; border: 0; border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer; }
+    .btn.secondary { background: #64748b; }
+    .btn.danger { background: #ef4444; }
+    .btn.ghost { background: transparent; color: #0284c7; border: 1px solid #0284c7; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    label { font-size: 13px; color: #475569; }
+    input[type="text"], input[type="number"], textarea, select { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #fff; }
+    textarea { resize: vertical; min-height: 64px; }
+    .task-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; margin: 10px 0; background: #fbfdff; }
+    .task-card header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .muted { color: #6b7280; font-size: 12px; }
+    .pill { display: inline-block; background: #dbeafe; color: #1d4ed8; padding: 2px 8px; border-radius: 999px; font-size: 12px; }
+    .footer { padding: 10px 12px; border-top: 1px solid #e5e7eb; background: #fff; display: flex; justify-content: center; gap: 10px; }
+    @media (max-width: 880px) { main { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Конструктор tasks.json</h1>
+    <div class="muted">Соберите задания для урока и экспортируйте JSON</div>
+  </header>
+  <main>
+    <aside>
+      <h2>Параметры урока</h2>
+      <div class="row">
+        <label>Заголовок урока</label>
+        <input id="title" type="text" value="Урок 2 — Практика" />
+      </div>
+      <div class="row">
+        <label>Номер урока</label>
+        <input id="lesson" type="number" min="1" value="2" />
+      </div>
+      <div class="row">
+        <label>number_of_hanzi</label>
+        <input id="number_of_hanzi" type="number" min="0" value="5" />
+      </div>
+      <hr />
+      <h2>Добавить задание</h2>
+      <div class="row">
+        <select id="task-type">
+          <option value="choice_single">Один выбор (choice_single)</option>
+          <option value="choice_multi">Множественный выбор (choice_multi)</option>
+          <option value="multi_group_single">Группы вопросов (multi_group_single)</option>
+          <option value="match_pairs">Сопоставления пары (match_pairs)</option>
+          <option value="select_mapping">Выпадающие соответствия (select_mapping)</option>
+          <option value="arrange_words">Сборка из слов (arrange_words)</option>
+          <option value="arrange_chars">Сборка из иероглифов (arrange_chars)</option>
+        </select>
+        <button class="btn" id="add-task">+ Добавить</button>
+      </div>
+      <p class="muted">Нажмите + чтобы вставить задание в список справа</p>
+      <hr />
+      <div class="row">
+        <button class="btn ghost" id="import-json">Импортировать tasks.json</button>
+        <input type="file" id="file-input" accept="application/json" style="display:none" />
+      </div>
+    </aside>
+    <section>
+      <h2>Список заданий</h2>
+      <div id="task-list"></div>
+    </section>
+  </main>
+  <div class="footer">
+    <button class="btn" id="export-json">💾 Сохранить tasks.json</button>
+    <button class="btn secondary" id="clear-all">Очистить</button>
+  </div>
+
+  <script>
+    const taskList = document.getElementById('task-list');
+
+    const newId = () => 't_' + Math.random().toString(36).slice(2, 9);
+
+    function addTaskCard(type) {
+      const card = document.createElement('div');
+      card.className = 'task-card';
+      card.dataset.type = type;
+      card.dataset.id = newId();
+
+      const header = document.createElement('header');
+      const title = document.createElement('div');
+      title.innerHTML = `<span class="pill">${type}</span>`;
+      const tools = document.createElement('div');
+      const delBtn = document.createElement('button'); delBtn.className = 'btn danger'; delBtn.textContent = 'Удалить';
+      delBtn.onclick = () => card.remove();
+      tools.appendChild(delBtn);
+      header.appendChild(title); header.appendChild(tools);
+      card.appendChild(header);
+
+      card.appendChild(renderFields(type));
+      taskList.appendChild(card);
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function fieldRow(labelText, inputEl) {
+      const wrap = document.createElement('div');
+      wrap.className = 'row';
+      const label = document.createElement('label'); label.textContent = labelText;
+      wrap.appendChild(label); wrap.appendChild(inputEl);
+      return wrap;
+    }
+
+    function textInput(placeholder = '') { const i = document.createElement('input'); i.type = 'text'; i.placeholder = placeholder; return i; }
+    function numberInput(min = 0, value = 0) { const i = document.createElement('input'); i.type = 'number'; i.min = String(min); i.value = String(value); return i; }
+    function textareaInput(placeholder = '') { const t = document.createElement('textarea'); t.placeholder = placeholder; return t; }
+
+    function addListEditor(labelName, placeholder = '', initial = []) {
+      const container = document.createElement('div');
+      const head = document.createElement('div'); head.className = 'row';
+      const label = document.createElement('label'); label.textContent = labelName;
+      const addBtn = document.createElement('button'); addBtn.className = 'btn'; addBtn.textContent = '+';
+      head.appendChild(label); head.appendChild(addBtn);
+      container.appendChild(head);
+      const list = document.createElement('div'); container.appendChild(list);
+
+      function addItem(value = '') {
+        const row = document.createElement('div'); row.className = 'row';
+        const input = textInput(placeholder); input.value = value;
+        const del = document.createElement('button'); del.className = 'btn danger'; del.textContent = '×';
+        del.onclick = () => row.remove();
+        row.appendChild(input); row.appendChild(del);
+        list.appendChild(row);
+      }
+      addBtn.onclick = () => addItem('');
+      initial.forEach(v => addItem(v));
+
+      return { root: container, getValues: () => Array.from(list.querySelectorAll('input')).map(i => i.value).filter(Boolean) };
+    }
+
+    function renderFields(type) {
+      const wrap = document.createElement('div');
+
+      const commonPrompt = textInput('Подсказка/заголовок (prompt)');
+      wrap.appendChild(fieldRow('prompt', commonPrompt));
+
+      if (type === 'choice_single') {
+        const oracle = textInput('Текст вопроса на китайском (oracle)');
+        const pinyin = textInput('Пиньинь (необязательно)');
+        const question = textInput('Вопрос');
+        const opts = addListEditor('Варианты', 'Текст варианта', ['Правильный вариант', 'Неверный вариант']);
+        wrap.appendChild(fieldRow('oracle', oracle));
+        wrap.appendChild(fieldRow('pinyin', pinyin));
+        wrap.appendChild(fieldRow('question', question));
+        wrap.appendChild(opts.root);
+        wrap.getValue = () => ({
+          type,
+          prompt: commonPrompt.value,
+          oracle: oracle.value,
+          pinyin: pinyin.value,
+          question: question.value,
+          options: opts.getValues().map((t, i) => ({ text: t, correct: i === 0 }))
+        });
+      }
+
+      if (type === 'choice_multi') {
+        const items = [];
+        const editor = addListEditor('Пункты', 'Текст пункта', ['Правильный', 'Неверный']);
+        wrap.appendChild(editor.root);
+        wrap.getValue = () => ({ type, prompt: commonPrompt.value, items: editor.getValues().map((t, i) => ({ text: t, correct: i === 0 })) });
+      }
+
+      if (type === 'multi_group_single') {
+        const groups = [];
+        const addGroupBtn = document.createElement('button'); addGroupBtn.className = 'btn'; addGroupBtn.textContent = '+ Группа';
+        wrap.appendChild(addGroupBtn);
+        const list = document.createElement('div'); wrap.appendChild(list);
+        addGroupBtn.onclick = () => {
+          const g = document.createElement('div'); g.className = 'task-card';
+          const oracle = textInput('oracle');
+          const pinyin = textInput('pinyin');
+          const correct = textInput('Правильный вариант (в точном тексте)');
+          const opts = addListEditor('Варианты', 'Текст варианта', []);
+          g.appendChild(fieldRow('oracle', oracle));
+          g.appendChild(fieldRow('pinyin', pinyin));
+          g.appendChild(fieldRow('correct', correct));
+          g.appendChild(opts.root);
+          const rm = document.createElement('button'); rm.className = 'btn danger'; rm.textContent = 'Удалить группу'; rm.onclick = () => g.remove();
+          g.appendChild(rm);
+          list.appendChild(g);
+        };
+        wrap.getValue = () => ({
+          type,
+          prompt: commonPrompt.value,
+          groups: Array.from(wrap.querySelectorAll('.task-card > .row input[placeholder="oracle"]')).length ? [] :
+            Array.from(list.children).map(g => {
+              const rows = g.querySelectorAll('.row');
+              const get = name => rows[Array.from(rows).findIndex(r => r.querySelector('label')?.textContent === name)].querySelector('input').value;
+              const optsBox = g.querySelectorAll('div .row input[type="text"]');
+              const options = Array.from(optsBox).map(i => i.value).filter(Boolean);
+              return { id: newId(), oracle: get('oracle'), pinyin: get('pinyin'), options, correctText: get('Правильный вариант (в точном тексте)') };
+            })
+        });
+      }
+
+      if (type === 'match_pairs') {
+        const addPair = () => {
+          const row = document.createElement('div'); row.className = 'grid-2';
+          const left = textInput('Иероглиф'); const right = textInput('Значение');
+          row.appendChild(left); row.appendChild(right);
+          list.appendChild(row);
+        };
+        const list = document.createElement('div');
+        const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = '+ Пара'; btn.onclick = addPair;
+        wrap.appendChild(btn); wrap.appendChild(list);
+        addPair();
+        wrap.getValue = () => ({ type, leftTitle: 'Иероглифы', rightTitle: 'Значения', pairs: Array.from(list.children).map(r => ({ left: r.children[0].value, right: r.children[1].value })) });
+      }
+
+      if (type === 'select_mapping') {
+        const rows = document.createElement('div');
+        const addRow = () => {
+          const row = document.createElement('div'); row.className = 'task-card';
+          const ch = textInput('Иероглиф (char)');
+          const correct = textInput('Правильное значение');
+          const opts = addListEditor('Опции', 'Вариант', []);
+          row.appendChild(fieldRow('char', ch)); row.appendChild(fieldRow('correct', correct)); row.appendChild(opts.root);
+          rows.appendChild(row);
+        };
+        const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = '+ Пара'; btn.onclick = addRow;
+        wrap.appendChild(btn); wrap.appendChild(rows);
+        addRow();
+        wrap.getValue = () => ({ type, prompt: commonPrompt.value, pairs: Array.from(rows.children).map(r => ({ char: r.querySelector('input[placeholder="Иероглиф (char)"]').value, correct: r.querySelector('input[placeholder="Правильное значение"]').value, options: Array.from(r.querySelectorAll('input[type="text"]')).slice(2).map(i => i.value).filter(Boolean) })) });
+      }
+
+      if (type === 'arrange_words') {
+        const oracle = textInput('Текст на китайском');
+        const pinyin = textInput('Пиньинь');
+        const pool = addListEditor('Слова', 'Слово', []);
+        const accepted = textareaInput('Каждая строчка — допустимый порядок; слова через запятую');
+        wrap.appendChild(fieldRow('oracle', oracle)); wrap.appendChild(fieldRow('pinyin', pinyin)); wrap.appendChild(pool.root); wrap.appendChild(fieldRow('Accepted (строки)', accepted));
+        wrap.getValue = () => ({ type, prompt: commonPrompt.value, oracle: oracle.value, pinyin: pinyin.value, pool: pool.getValues(), accepted: accepted.value.split('\n').map(l => l.split(',').map(s => s.trim()).filter(Boolean)).filter(a => a.length) });
+      }
+
+      if (type === 'arrange_chars') {
+        const instruction = textInput('Инструкция');
+        const expected = textareaInput('Точный порядок иероглифов через запятую');
+        const pool = addListEditor('Пул иероглифов', 'Иероглиф', []);
+        wrap.appendChild(fieldRow('instruction', instruction)); wrap.appendChild(fieldRow('expected', expected)); wrap.appendChild(pool.root);
+        wrap.getValue = () => ({ type, prompt: commonPrompt.value, instruction: instruction.value, expected: expected.value.split(',').map(s => s.trim()).filter(Boolean), pool: pool.getValues() });
+      }
+
+      return wrap;
+    }
+
+    document.getElementById('add-task').onclick = () => {
+      const type = document.getElementById('task-type').value;
+      addTaskCard(type);
+    };
+
+    document.getElementById('export-json').onclick = () => {
+      const lesson = Number(document.getElementById('lesson').value || '2');
+      const title = document.getElementById('title').value || '';
+      const number_of_hanzi = Number(document.getElementById('number_of_hanzi').value || '0');
+      const tasks = Array.from(taskList.children).map(card => {
+        const type = card.dataset.type;
+        const body = card.querySelector(':scope > div');
+        const value = card.querySelector(':scope > div').getValue ? card.querySelector(':scope > div').getValue() : card.getValue?.() || {};
+        // Fallback: walk child 'wrap' container for getValue
+        const getVal = card.querySelector(':scope > div').getValue || card.getValue || (() => ({}));
+        return { id: newId(), ...(getVal()) };
+      });
+
+      const json = { lesson, title, number_of_hanzi, tasks };
+      const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'tasks.json'; a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    document.getElementById('clear-all').onclick = () => { taskList.innerHTML = ''; };
+
+    document.getElementById('import-json').onclick = () => document.getElementById('file-input').click();
+    document.getElementById('file-input').addEventListener('change', async (e) => {
+      const file = e.target.files?.[0]; if (!file) return;
+      const text = await file.text();
+      try {
+        const data = JSON.parse(text);
+        document.getElementById('title').value = data.title || '';
+        document.getElementById('lesson').value = data.lesson || 2;
+        document.getElementById('number_of_hanzi').value = data.number_of_hanzi || 0;
+        taskList.innerHTML = '';
+        (data.tasks || []).forEach(t => {
+          addTaskCard(t.type);
+          // Note: for brevity, not auto-hydrating fields; user can paste
+        });
+      } catch (e) { alert('Ошибка чтения JSON'); }
+    });
+  </script>
+</body>
+</html>
