@@ -180,10 +180,6 @@
                 // Пользователь уже вошёл
                 updateUserInfo(user);
 
-                // Переводим на урок после входа
-                setTimeout(() => {
-                    window.location.href = '..'; // или index_rus.html
-                }, 1500);
             } else {
                 // Нет авторизации
                 loginBtn.textContent = 'Войти через Google';
