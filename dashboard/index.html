@@ -173,6 +173,7 @@
             userEmail.textContent = user.email;
             userPhoto.src = user.photoURL || 'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg ';
         }
+        
 
         // Автоматическая проверка авторизации
         onAuthStateChanged(auth, (user) => {
