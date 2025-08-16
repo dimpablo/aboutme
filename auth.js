@@ -2,7 +2,7 @@
 // Shared Firebase Auth + Firestore points API
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -42,7 +42,6 @@ async function startUserListener(user) {
   if (userUnsub) { userUnsub(); userUnsub = null; }
   if (!user) return;
   const ref = doc(db, 'users', user.uid);
-  // If doc missing, initialize with local points
   await ensureDoc(user.uid);
   userUnsub = onSnapshot(ref, (snap) => {
     if (!snap.exists()) return;
@@ -64,22 +63,32 @@ async function setPoints(v) {
   notify();
 }
 
-async function incPoints(delta) {
-  await setPoints(cachedPoints + Number(delta || 0));
-}
+async function incPoints(delta) { await setPoints(cachedPoints + Number(delta || 0)); }
 
 function subscribe(fn) { listeners.add(fn); fn({ user: currentUser, points: cachedPoints }); return () => listeners.delete(fn); }
 
 async function login() {
-  await signInWithPopup(auth, provider);
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    // Fallback to redirect for environments where popup is blocked or not supported
+    try {
+      await signInWithRedirect(auth, provider);
+    } catch (err) {
+      console.error('Auth error:', err);
+      throw err;
+    }
+  }
 }
 
 async function logout() { await signOut(auth); }
 
+// Handle redirect result if any
+getRedirectResult(auth).catch(() => {}).then(() => {});
+
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   if (user) {
-    // Sync local->server on first login if server has no doc/points
     const ref = doc(db, 'users', user.uid);
     const snap = await getDoc(ref);
     if (!snap.exists()) {
@@ -96,17 +105,8 @@ onAuthStateChanged(auth, async (user) => {
   notify();
 });
 
-window.PointsAPI = {
-  get user() { return currentUser; },
-  get: () => cachedPoints,
-  set: setPoints,
-  inc: incPoints,
-  subscribe,
-  login,
-  logout
-};
+window.PointsAPI = { get user() { return currentUser; }, get: () => cachedPoints, set: setPoints, inc: incPoints, subscribe, login, logout };
 
-// Auto-wire simple topbar if present
 (function wireTopbar(){
   const pt = document.getElementById('points');
   const av = document.getElementById('avatar');
