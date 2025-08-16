@@ -2,325 +2,84 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Иероглифика</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1976d2" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <title>Урок 1 — Иероглифика</title>
   <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  color: #333;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 10px;
-  gap: 8px;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  color: #555;
-  flex-shrink: 0;
-}
-
-.scale-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.scale-btn {
-  width: 28px;
-  height: 28px;
-  font-size: 18px;
-  line-height: 28px;
-  text-align: center;
-  background-color: #e0e0e0;
-  border-radius: 50%;
-  cursor: pointer;
-  user-select: none;
-}
-
-.scale-value {
-  min-width: 36px;
-  text-align: center;
-  font-weight: bold;
-}
-
-#progress-container {
-  width: 100%;
-  height: 6px;
-  background-color: #e0e0e0;
-  border-radius: 3px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-#progress-bar {
-  height: 100%;
-  width: 0%;
-  background-color: #4caf50;
-  transition: width 0.4s ease;
-  border-radius: 3px;
-}
-
-#task-container {
-  flex: 1;
-  border: none;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.3s ease;
-  min-height: 0;
-  max-height: calc(100vh - 150px);
-}
-
-#task-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  transform-origin: top left;
-  transform: scale(1);
-  transition: transform 0.2s ease;
-  overflow: auto;
-}
-
-.controls {
-  padding: 12px 0;
-  display: flex;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-#next-btn {
-  padding: 14px 24px;
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-  background-color: #1976d2;
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  width: 90%;
-  max-width: 300px;
-}
-
-#next-btn:active {
-  transform: scale(0.98);
-}
-
-#next-btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-  transform: none;
-}
-
-#status {
-  font-size: 16px;
-  text-align: center;
-  color: #555;
-}
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; color: #333; display: flex; flex-direction: column; gap: 10px; padding: 10px; overflow: hidden; }
+    .header { display: flex; justify-content: space-between; align-items: center; font-size: 16px; color: #555; }
+    #progress-container { height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+    #progress-bar { height: 100%; width: 0%; background: #4caf50; transition: width .3s ease; }
+    #board { flex: 1; display: flex; align-items: center; justify-content: center; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.08); min-height: 0; }
+    #char { width: 100%; height: 100%; max-width: 480px; max-height: 480px; }
+    .controls { display: flex; gap: 8px; justify-content: center; }
+    button.primary { padding: 12px 18px; background: #1976d2; color: #fff; border: 0; border-radius: 12px; font-size: 16px; }
+    button.secondary { padding: 10px 16px; background: #90a4ae; color: #fff; border: 0; border-radius: 10px; font-size: 15px; }
+    .msg { text-align: center; font-weight: 600; }
+    @media (max-width: 480px) { #char { max-width: 360px; max-height: 360px; } button.primary, button.secondary { width: 90%; max-width: 340px; } }
+    @supports (padding: env(safe-area-inset-bottom)) { body { padding-bottom: calc(10px + env(safe-area-inset-bottom)); } }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 </head>
 <body>
   <div class="header">
-    <div id="status">🔤 Готов к заданию</div>
-    <div class="scale-controls">
-      <div class="scale-btn" id="zoom-out">−</div>
-      <div class="scale-value" id="scale-value">1.0</div>
-      <div class="scale-btn" id="zoom-in">+</div>
-    </div>
+    <div id="status">⏳ Готовим иероглифы урока 1…</div>
+    <div id="counter"></div>
   </div>
-
-  <div id="progress-container">
-    <div id="progress-bar"></div>
-  </div>
-
-  <div id="task-container">
-    <iframe id="task-frame" src="about:blank" frameborder="0" allowfullscreen></iframe>
-  </div>
-
+  <div id="progress-container"><div id="progress-bar"></div></div>
+  <div id="board"><div id="char"></div></div>
   <div class="controls">
-    <button id="next-btn" disabled>Следующее задание</button>
+    <button class="secondary" id="skip-btn">Пропустить</button>
+    <button class="primary" id="next-btn" disabled>Следующий</button>
   </div>
+  <div class="msg" id="msg"></div>
 
   <script>
-    const lessonwords = [
-      '丙', '寅', '卜', '爭', '貞', '雨', '曰', '其', '癸',
-      '亥', '不', '允', '王', '占', '丑', '己', '卯', '珏', '壬', '午'
-    ];
+    const statusEl = document.getElementById('status');
+    const counterEl = document.getElementById('counter');
+    const progressBar = document.getElementById('progress-bar');
+    const board = document.getElementById('char');
+    const btnSkip = document.getElementById('skip-btn');
+    const btnNext = document.getElementById('next-btn');
+    const msgEl = document.getElementById('msg');
 
-    const totalTasks = 10; // Количество заданий, которые нужно выполнить
-    let currentTaskIndex = 0;
+    let writer = null; const queue = []; let currentIndex = 0;
 
-    let currentScale = 1.0;
-    const minScale = 0.25;
-    const maxScale = 2.0;
-    const scaleStep = 0.1;
+    function setProgress() { const total = queue.length || 1; const pct = Math.min(100, Math.round((currentIndex / total) * 100)); progressBar.style.width = pct + '%'; counterEl.textContent = total ? `${currentIndex}/${total}` : ''; }
 
-    const iframe = document.getElementById("task-frame");
-    const statusEl = document.getElementById("status");
-    const nextBtn = document.getElementById("next-btn");
-    const progressBar = document.getElementById("progress-bar");
-    const scaleValueEl = document.getElementById("scale-value");
-    const zoomInBtn = document.getElementById("zoom-in");
-    const zoomOutBtn = document.getElementById("zoom-out");
-
-    // --- Масштабирование ---
-    function setScale(scale) {
-      currentScale = Math.max(minScale, Math.min(maxScale, scale));
-      iframe.style.transform = `scale(${currentScale})`;
-      scaleValueEl.textContent = currentScale.toFixed(1);
+    async function extractCharsFromTheory() {
+      const res = await fetch('./theory.html?_=' + Date.now()); const html = await res.text(); const div = document.createElement('div'); div.innerHTML = html;
+      const items = Array.from(div.querySelectorAll('.char-list .char-item > span')); const chars = [];
+      items.forEach(span => { const text = span.childNodes[0]?.textContent || span.textContent || ''; const ch = (text.match(/[\u4e00-\u9fff\uf900-\ufaff]/) || [null])[0]; if (ch) chars.push(ch); });
+      const uniq = []; const seen = new Set(); chars.forEach(c => { if (!seen.has(c)) { seen.add(c); uniq.push(c); } }); return uniq;
     }
 
-    zoomInBtn.addEventListener("click", () => setScale(currentScale + scaleStep));
-    zoomOutBtn.addEventListener("click", () => setScale(currentScale - scaleStep));
+    function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 
-    // --- Получение случайного иероглифа ---
-    function getRandomHanzi() {
-      return lessonwords[Math.floor(Math.random() * lessonwords.length)];
+    function mountChar(ch) {
+      board.innerHTML=''; writer = HanziWriter.create('char', ch, { width: board.clientWidth, height: board.clientHeight, showCharacter:false, showOutline:false, showHintAfterMisses:1, highlightOnComplete:true, padding:8 });
+      writer.quiz({ onComplete: function(){ msgEl.textContent='✅ Отлично!'; btnNext.disabled=false; currentIndex++; setProgress(); if (currentIndex >= queue.length) { statusEl.textContent='🎉 Все иероглифы пройдены!'; btnNext.disabled=true; btnSkip.disabled=true; setTimeout(()=>{ window.location.href='../'; }, 3500); } } });
+      statusEl.textContent = `Пишите: ${ch}`; btnNext.disabled = true; msgEl.textContent='';
     }
 
-    // --- Загрузка задания с новым иероглифом ---
-    function loadNextTask() {
-      if (currentTaskIndex >= totalTasks) return;
+    btnSkip.onclick = () => { if (currentIndex < queue.length) { currentIndex++; setProgress(); if (currentIndex < queue.length) mountChar(queue[currentIndex]); } };
+    btnNext.onclick = () => { if (currentIndex < queue.length) { mountChar(queue[currentIndex]); } };
 
-      const hanzi = getRandomHanzi();
-      const url = `task1.html?_=${Date.now()}#${hanzi}`;
-      
-      // Очистка src и новая загрузка
-      iframe.src = '';
-      setTimeout(() => {
-        iframe.src = url;
-      }, 10);
+    function tryFullscreen(){ const el=document.documentElement; const req=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen; if (req){ try{req.call(el);}catch(_){}} window.removeEventListener('click', tryFullscreen, {capture:true}); }
+    window.addEventListener('click', tryFullscreen, { capture:true, once:true });
 
-      statusEl.textContent = `🔤 Задание ${currentTaskIndex + 1}/${totalTasks}: работайте с иероглифом «${hanzi}»`;
-      nextBtn.disabled = true;
-      updateProgress();
+    async function init(){
+      try {
+        if ('serviceWorker' in navigator) { try { await navigator.serviceWorker.register('./sw.js'); } catch(_){} }
+        const chars = await extractCharsFromTheory(); if (!chars.length) throw new Error('no chars');
+        queue.push(...shuffle(chars)); currentIndex=0; setProgress(); mountChar(queue[currentIndex]);
+      } catch(e) { statusEl.textContent = '❌ Не удалось получить словарь из theory.html'; }
     }
-
-    // --- Обновление прогресса ---
-    function updateProgress() {
-      const progress = (currentTaskIndex / totalTasks) * 100;
-      progressBar.style.width = `${progress}%`;
-    }
-
-    // --- Обработка сообщений от iframe ---
-    window.addEventListener("message", (event) => {
-      const { type, success } = event.data;
-
-      if (type === "TASK_RESULT" && success === true) {
-        statusEl.textContent = "✅ Задание выполнено! Нажмите 'Следующее задание'";
-        nextBtn.disabled = false;
-      }
-    });
-
-    // --- Кнопка "Следующее задание" ---
-    nextBtn.addEventListener("click", () => {
-      currentTaskIndex++;
-
-      if (currentTaskIndex >= totalTasks) {
-        // Конец урока
-        iframe.style.display = "none";
-        nextBtn.disabled = true;
-        statusEl.innerHTML = `<div style="text-align: center;">
-          <h2>🎉 Поздравляем!</h2>
-          <p>Вы завершили урок<br><strong>Иероглифика</strong>!</p>
-          <div id="fireworks" style="width: 100%; height: 200px; position: relative; background: #0000; border-radius: 8px; margin: 10px 0;"></div>
-        </div>`;
-        createFireworks();
-        setTimeout(() => window.location.href = "../", 5000);
-      } else {
-        loadNextTask();
-      }
-    });
-
-    // --- Автомасштаб на мобильных ---
-    function isMobile() {
-      return window.innerWidth <= 768 || (navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
-    }
-
-    // --- Запуск при загрузке ---
-    window.addEventListener("load", () => {
-      if (isMobile()) {
-        setScale(0.5);
-      }
-      loadNextTask(); // Загружаем первое задание
-    });
-
-    // --- Фейерверки ---
-    function createFireworks() {
-      const container = document.getElementById("fireworks");
-      const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF", "#FFA500", "#FFFFFF"];
-      const particles = 50;
-
-      function createExplosion(x, y) {
-        for (let i = 0; i < particles; i++) {
-          const particle = document.createElement("div");
-          const angle = Math.random() * Math.PI * 2;
-          const speed = 1 + Math.random() * 3;
-          const size = 2 + Math.random() * 4;
-
-          particle.style.position = "absolute";
-          particle.style.width = `${size}px`;
-          particle.style.height = `${size}px`;
-          particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-          particle.style.borderRadius = "50%";
-          particle.style.boxShadow = "0 0 6px currentColor";
-          particle.style.left = `${x}px`;
-          particle.style.top = `${y}px`;
-          particle.style.pointerEvents = "none";
-
-          container.appendChild(particle);
-
-          let dx = Math.cos(angle) * speed;
-          let dy = Math.sin(angle) * speed;
-          let opacity = 1;
-          let posX = x;
-          let posY = y;
-
-          const animate = () => {
-            opacity -= 0.02;
-            posX += dx;
-            posY += dy + 0.1;
-            dy += 0.05;
-
-            particle.style.opacity = opacity;
-            particle.style.left = `${posX}px`;
-            particle.style.top = `${posY}px`;
-
-            if (opacity > 0) {
-              requestAnimationFrame(animate);
-            } else {
-              container.removeChild(particle);
-            }
-          };
-
-          requestAnimationFrame(animate);
-        }
-      }
-
-      for (let i = 0; i < 5; i++) {
-        setTimeout(() => {
-          const x = 50 + Math.random() * (container.offsetWidth - 100);
-          const y = 100 + Math.random() * (container.offsetHeight - 100);
-          createExplosion(x, y);
-        }, i * 300);
-      }
-    }
+    window.addEventListener('load', init);
   </script>
 </body>
 </html>

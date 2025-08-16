@@ -69,6 +69,11 @@
     }
     .option-btn.selected, label.option-radio.selected, label.option-check.selected { background: #e4f1ff; border-color: #1976d2; }
 
+    .blink-success { animation: blinkG 300ms ease-in-out 2; }
+    .blink-error { animation: blinkR 300ms ease-in-out 2; }
+    @keyframes blinkG { 0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); } 50% { box-shadow: 0 0 0 3px rgba(76,175,80,.6); } }
+    @keyframes blinkR { 0%,100% { box-shadow: 0 0 0 0 rgba(244,67,54,0); } 50% { box-shadow: 0 0 0 3px rgba(244,67,54,.6); } }
+
     .message { margin-top: 10px; text-align: center; font-weight: 600; }
     .success { color: #2e7d32; }
     .error { color: #c62828; }
@@ -320,37 +325,36 @@
       const leftChars = pairs.map(p => p.left);
       const rightVals = shuffle(pairs.map(p => p.right));
 
-      const selected = { left: null, right: null };
-      const matched = new Set();
+      let selLeft = null, selRight = null; let matched = 0;
 
       leftChars.forEach(ch => {
         const btn = el('div', 'option-btn', ch);
-        btn.addEventListener('click', () => { selected.left = ch; highlight(btn, 'left'); attempt(); });
+        btn.addEventListener('click', () => { selLeft = btn; highlight(btn, 'left'); attempt(); });
         leftCol.appendChild(btn);
       });
       rightVals.forEach(rv => {
         const btn = el('div', 'option-btn', rv);
-        btn.addEventListener('click', () => { selected.right = rv; highlight(btn, 'right'); attempt(); });
+        btn.addEventListener('click', () => { selRight = btn; highlight(btn, 'right'); attempt(); });
         rightCol.appendChild(btn);
       });
 
       function attempt() {
-        if (!selected.left || !selected.right) return;
-        const ok = (task.pairs || []).some(p => p.left === selected.left && p.right === selected.right);
-        const pairKey = selected.left + '→' + selected.right;
-        if (ok && !matched.has(pairKey)) {
-          matched.add(pairKey);
-          markMatched(leftCol, selected.left);
-          markMatched(rightCol, selected.right);
-          selected.left = null; selected.right = null;
-          if (matched.size >= (task.pairs || []).length) {
+        if (!selLeft || !selRight) return;
+        const l = selLeft.textContent, r = selRight.textContent;
+        const ok = (task.pairs || []).some(p => p.left === l && p.right === r);
+        const effect = ok ? 'blink-success' : 'blink-error';
+        selLeft.classList.add(effect); selRight.classList.add(effect);
+        setTimeout(() => { selLeft.classList.remove(effect); selRight.classList.remove(effect); }, 350);
+        if (ok) {
+          selLeft.classList.add('selected'); selRight.classList.add('selected');
+          selLeft.style.pointerEvents = 'none'; selRight.style.pointerEvents = 'none';
+          matched++;
+          if (matched >= (task.pairs || []).length) {
             wrapper.appendChild(el('div', 'message success', '✅ Все верно!'));
             enableNext();
           }
-        } else {
-          // reset selection highlight only
-          selected.left = null; selected.right = null;
         }
+        selLeft = null; selRight = null;
       }
 
       wrapper.appendChild(leftTitle);

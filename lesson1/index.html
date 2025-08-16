@@ -2,504 +2,220 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Курс: Древнекитайские оракульные надписи</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1976d2" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <title>Урок 1 — Практика</title>
   <style>
-    html, body {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; /* предотвращает горизонтальный скролл */
-}
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    html, body { width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; color: #333; min-height: 100vh; display: flex; flex-direction: column; padding: 10px; gap: 10px; }
+    .header { display: flex; justify-content: space-between; align-items: center; font-size: 16px; color: #555; }
+    #progress-container { width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+    #progress-bar { height: 100%; width: 0%; background: #4caf50; transition: width 0.3s ease; }
+    #task-container { flex: 1; width: 100%; border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.08); padding: 12px; overflow: auto; min-height: 0; max-height: calc(100vh - 140px); }
+    .controls { display: flex; justify-content: center; }
+    #next-btn { padding: 14px 24px; font-size: 18px; font-weight: 600; color: #fff; background: #1976d2; border: 0; border-radius: 12px; width: 90%; max-width: 320px; box-shadow: 0 4px 6px rgba(0,0,0,.1); }
+    #next-btn:disabled { background: #bdbdbd; }
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  color: #333;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 10px;
-  gap: 8px;
-  width: 100%; /* ← добавлено */
-  box-sizing: border-box;
-}
+    .prompt { font-size: 18px; font-weight: 600; text-align: center; margin: 4px 0 8px; }
+    .oracle { font-size: 22px; font-weight: 700; text-align: center; margin: 6px 0; word-break: break-word; }
+    .pinyin-wrap { margin: 8px 0; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
+    .pinyin-toggle { width: 100%; background: #f5f5f5; border: none; padding: 8px 12px; text-align: left; color: #555; font-size: 14px; }
+    .pinyin { padding: 0 12px; max-height: 0; overflow: hidden; transition: max-height .25s ease, padding .25s ease; background: #fafafa; color: #666; font-style: italic; }
+    .pinyin.expanded { padding: 8px 12px; max-height: 80px; }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  color: #555;
-  flex-shrink: 0;
-}
+    .options { display: grid; gap: 8px; margin: 10px 0; }
+    .option-btn, .option-radio, .option-check { padding: 10px 12px; background: #f5f7fb; border: 1px solid #dfe3ea; border-radius: 8px; font-size: 16px; text-align: center; cursor: pointer; }
+    .option-btn.selected, label.option-radio.selected, label.option-check.selected { background: #e4f1ff; border-color: #1976d2; }
 
-.scale-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+    .pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
 
-.scale-btn {
-  width: 28px;
-  height: 28px;
-  font-size: 18px;
-  line-height: 28px;
-  text-align: center;
-  background-color: #e0e0e0;
-  border-radius: 50%;
-  cursor: pointer;
-  user-select: none;
-}
+    .blink-success { animation: blinkG 300ms ease-in-out 2; }
+    .blink-error { animation: blinkR 300ms ease-in-out 2; }
+    @keyframes blinkG { 0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); } 50% { box-shadow: 0 0 0 3px rgba(76,175,80,.6); } }
+    @keyframes blinkR { 0%,100% { box-shadow: 0 0 0 0 rgba(244,67,54,0); } 50% { box-shadow: 0 0 0 3px rgba(244,67,54,.6); } }
 
-.scale-value {
-  min-width: 36px;
-  text-align: center;
-  font-weight: bold;
-}
-
-#progress-container {
-  width: 100%;
-  height: 6px;
-  background-color: #e0e0e0;
-  border-radius: 3px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-#progress-bar {
-  height: 100%;
-  width: 0%;
-  background-color: #4caf50;
-  transition: width 0.4s ease;
-  border-radius: 3px;
-}
-
-#task-container {
-  flex: 1;
-  width: 100%; /* ← обязательно */
-  border: none;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease;
-  min-height: 0;
-  max-height: calc(100vh - 150px);
-}
-
-
-#task-container.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-#task-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  transform-origin: center top; /* ← центрируем масштаб */
-  transform: scale(1);
-  transition: transform 0.2s ease;
-  overflow: auto;
-}
-
-.controls {
-  padding: 12px 0;
-  display: flex;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-#next-btn {
-  padding: 14px 24px;
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-  background-color: #1976d2;
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  width: 90%;
-  max-width: 300px;
-}
-
-#next-btn:active {
-  transform: scale(0.98);
-}
-
-#next-btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.hidden-iframe {
-  position: absolute;
-  top: -9999px;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  border: none;
-}
-
-#status {
-  font-size: 16px;
-  text-align: center;
-  color: #555;
-}
-
-/* Мобильная адаптация */
-@media (max-width: 768px) {
-  #task-container {
-    max-height: calc(100vh - 180px); /* Больше места для кнопки */
-  }
-  
-  .controls {
-    padding: 8px 0;
-  }
-  
-  #next-btn {
-    padding: 12px 16px;
-    font-size: 16px;
-  }
-}
-</style>
+    @supports (padding: env(safe-area-inset-bottom)) { body { padding-bottom: calc(10px + env(safe-area-inset-bottom)); } }
+  </style>
 </head>
 <body>
   <div class="header">
-    <div id="status">🔍 Поиск заданий...</div>
-    <div class="scale-controls">
-      <div class="scale-btn" id="zoom-out">−</div>
-      <div class="scale-value" id="scale-value">1.0</div>
-      <div class="scale-btn" id="zoom-in">+</div>
-    </div>
+    <div id="status">⏳ Загружаем задания урока 1…</div>
+    <div id="scale-placeholder"></div>
   </div>
-
-  <div id="progress-container">
-    <div id="progress-bar"></div>
-  </div>
-
-  <!-- iframe скрыт до завершения поиска -->
-  <div id="task-container">
-    <iframe id="task-frame" src="about:blank" frameborder="0" allowfullscreen></iframe>
-  </div>
-
-  <div class="controls">
-    <button id="next-btn" disabled>Следующее задание</button>
-  </div>
+  <div id="progress-container"><div id="progress-bar"></div></div>
+  <div id="task-container"></div>
+  <div class="controls"><button id="next-btn" disabled>Следующее задание</button></div>
 
   <script>
-    const lessonwords = [
-      '丙', '寅', '卜', '爭', '貞', '雨', '曰', '其', '癸',
-      '亥', '不', '允', '王', '占', '丑', '己', '卯', '珏', '壬', '午'
-    ];
+    function shuffle(array) { const arr = [...array]; for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
 
-    let tasks = [];
-    let currentTaskIndex = 0;
-    let currentScale = 1.0;
-    const minScale = 0.25;
-    const maxScale = 2.0;
-    const scaleStep = 0.1;
+    const state = { tasks: [], currentIndex: 0 };
+    let hanziQueue = [];
 
-    const iframe = document.getElementById("task-frame");
-    const statusEl = document.getElementById("status");
-    const nextBtn = document.getElementById("next-btn");
-    const progressBar = document.getElementById("progress-bar");
-    const scaleValueEl = document.getElementById("scale-value");
-    const zoomInBtn = document.getElementById("zoom-in");
-    const zoomOutBtn = document.getElementById("zoom-out");
+    const statusEl = document.getElementById('status');
+    const taskContainer = document.getElementById('task-container');
+    const nextBtn = document.getElementById('next-btn');
+    const progressBar = document.getElementById('progress-bar');
 
-    let hasProcessedHanzi = false;
-    let discoveryCompleted = false;
+    function updateProgress() { const pct = state.tasks.length ? (state.currentIndex / state.tasks.length) * 100 : 0; progressBar.style.width = pct + '%'; }
+    function setMessage(text, ok) { statusEl.textContent = text; statusEl.style.color = ok === true ? '#2e7d32' : ok === false ? '#c62828' : '#555'; }
+    function enableNext() { nextBtn.disabled = false; }
+    function disableNext() { nextBtn.disabled = true; }
 
-    function shuffleArray(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
+    function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+    function renderPinyin(text) { const w = el('div', 'pinyin-wrap'); const b = el('button', 'pinyin-toggle', 'Показать пиньинь'); const body = el('div', 'pinyin', text); b.onclick = () => body.classList.toggle('expanded'); w.appendChild(b); w.appendChild(body); return w; }
+
+    // Hanzi scheduler
+    async function buildHanziQueue(theoryUrl, targetCount) {
+      const res = await fetch(theoryUrl + '?_=' + Date.now()); const html = await res.text(); const tmp = document.createElement('div'); tmp.innerHTML = html;
+      const items = Array.from(tmp.querySelectorAll('.char-list .char-item > span'));
+      const chars = []; items.forEach(span => { const t = span.childNodes[0]?.textContent || span.textContent || ''; const ch = (t.match(/[\u4e00-\u9fff\uf900-\ufaff]/) || [null])[0]; if (ch) chars.push(ch); });
+      const uniq = []; const seen = new Set(); chars.forEach(c => { if (!seen.has(c)) { seen.add(c); uniq.push(c); } });
+      if (!uniq.length) return [];
+      const picks = []; let pool = shuffle(uniq);
+      while (picks.length < targetCount) { if (!pool.length) pool = shuffle(uniq); const ch = pool.pop(); if (!picks.includes(ch)) picks.push(ch); }
+      return picks;
+    }
+    function injectHanziTasks(baseTasks, hanziChars) {
+      if (!hanziChars.length) return baseTasks;
+      const hanziTasks = hanziChars.map((ch, i) => ({ id: 'hanzi-' + i + '-' + ch, type: 'hanzi_draw', prompt: 'Нарисуйте иероглиф', oracle: ch }));
+      const mixed = [...baseTasks]; const step = Math.max(1, Math.floor(mixed.length / (hanziTasks.length + 1))); let idx = step;
+      hanziTasks.forEach(ht => { mixed.splice(Math.min(idx, mixed.length), 0, ht); idx += step + 1; });
+      return mixed;
     }
 
-    function checkTaskIsValid(n) {
-  return new Promise((resolve) => {
-    const filename = `task${n}.html`;
-    const frame = document.createElement("iframe");
-    frame.classList.add("hidden-iframe");
-    frame.setAttribute("data-check", n);
+    function renderChoiceSingle(task) {
+      const w = document.createElement('div');
+      if (task.prompt) w.appendChild(el('div', 'prompt', task.prompt));
+      if (task.oracle) w.appendChild(el('div', 'oracle', task.oracle));
+      if (task.pinyin) w.appendChild(renderPinyin(task.pinyin));
+      if (task.question) w.appendChild(el('div', 'prompt', task.question));
+      const optionsEl = el('div', 'options'); const options = shuffle(task.options || []); let selected = null;
+      options.forEach(opt => { const label = document.createElement('label'); label.className = 'option-radio'; const input = document.createElement('input'); input.type = 'radio'; input.name = 'q'; input.style.display = 'none'; input.onchange = () => { selected = opt; document.querySelectorAll('.option-radio').forEach(n => n.classList.remove('selected')); label.classList.add('selected'); }; label.appendChild(input); label.appendChild(document.createTextNode(opt.text)); optionsEl.appendChild(label); });
+      const msg = el('div', 'prompt'); const btn = button('Проверить', () => { if (!selected) { msg.textContent = 'Выберите вариант.'; msg.style.color = '#c62828'; return; } if (!!selected.correct) { msg.textContent = '✅ Верно!'; msg.style.color = '#2e7d32'; enableNext(); } else { msg.textContent = '❌ Неверно.'; msg.style.color = '#c62828'; } });
+      w.appendChild(optionsEl); w.appendChild(btn); w.appendChild(msg); return w;
+    }
 
-    let responded = false;
-    let timeoutId;
+    function renderChoiceMulti(task) {
+      const w = document.createElement('div'); if (task.prompt) w.appendChild(el('div', 'prompt', task.prompt));
+      const optionsEl = el('div', 'options'); const options = shuffle(task.items || []); const selected = new Map();
+      options.forEach(opt => { const label = document.createElement('label'); label.className = 'option-check'; const input = document.createElement('input'); input.type = 'checkbox'; input.style.display = 'none'; input.onchange = () => { selected.set(opt.text, input.checked); label.classList.toggle('selected', input.checked); }; label.appendChild(input); label.appendChild(document.createTextNode(opt.text)); optionsEl.appendChild(label); selected.set(opt.text, false); });
+      const msg = el('div', 'prompt'); const btn = button('Проверить', () => { const ok = (task.items || []).every(item => !!selected.get(item.text) === !!item.correct); if (ok) { msg.textContent = '✅ Верно!'; msg.style.color = '#2e7d32'; enableNext(); } else { msg.textContent = '❌ Проверьте выбор.'; msg.style.color = '#c62828'; } });
+      w.appendChild(optionsEl); w.appendChild(btn); w.appendChild(msg); return w;
+    }
 
-    function onMessage(event) {
-      // Проверяем, что сообщение от нашего фрейма
-      const frameN = parseInt(frame.getAttribute("data-check"));
-      if (event.data.type === "TASK_EXISTS" && event.data.valid) {
-        if (!responded && frameN === n) {
-          responded = true;
-          clearTimeout(timeoutId);
-          document.body.removeChild(frame);
-          window.removeEventListener("message", onMessage);
-          resolve({ exists: true, n });
+    function renderArrangeWords(task) {
+      const w = document.createElement('div'); if (task.prompt) w.appendChild(el('div', 'prompt', task.prompt)); if (task.oracle) w.appendChild(el('div', 'oracle', task.oracle)); if (task.pinyin) w.appendChild(renderPinyin(task.pinyin));
+      const pool = el('div', 'word-pool'); const drop = el('div', 'word-pool');
+      const addPh = () => { if (!drop.children.length) { const s = document.createElement('span'); s.style.color = '#90a4ae'; s.textContent = '[пусто]'; drop.appendChild(s); } };
+      addPh(); shuffle(task.pool || []).forEach(wd => pool.appendChild(token(wd, () => move(pool, drop, wd))));
+      const msg = el('div', 'prompt'); const btn = button('Проверить', () => { const cur = Array.from(drop.children).filter(n => n.dataset && n.dataset.t).map(n => n.dataset.t); const ok = (task.accepted || []).some(a => arraysEqual(a, cur)); if (ok) { msg.textContent = '✅ Верно!'; msg.style.color = '#2e7d32'; enableNext(); } else { msg.textContent = '❌ Попробуйте снова.'; msg.style.color = '#c62828'; } });
+      const controls = document.createElement('div'); controls.appendChild(btn); controls.appendChild(button('Сбросить', () => renderTask(task)));
+      w.appendChild(pool); w.appendChild(drop); w.appendChild(controls); w.appendChild(msg); return w;
+    }
+
+    function renderMatchPairs(task) {
+      const w = document.createElement('div');
+      const grid = el('div', 'pair-grid'); const leftCol = el('div', 'col'); const rightCol = el('div', 'col'); grid.appendChild(leftCol); grid.appendChild(rightCol);
+      const pairs = shuffle(task.pairs || []); const leftItems = pairs.map(p => p.left); const rightItems = shuffle(pairs.map(p => p.right));
+      let selLeft = null, selRight = null; let matchedCount = 0;
+      function mkBtn(text) { const b = el('div', 'option-btn', text); b.tabIndex = 0; return b; }
+      leftItems.forEach(txt => { const b = mkBtn(txt); b.addEventListener('click', () => { selLeft = b; highlight(leftCol, b); tryMatch(); }); leftCol.appendChild(b); });
+      rightItems.forEach(txt => { const b = mkBtn(txt); b.addEventListener('click', () => { selRight = b; highlight(rightCol, b); tryMatch(); }); rightCol.appendChild(b); });
+      function isCorrect(l, r) { return (task.pairs || []).some(p => p.left === l && p.right === r); }
+      function tryMatch() {
+        if (!selLeft || !selRight) return;
+        const l = selLeft.textContent, r = selRight.textContent;
+        const ok = isCorrect(l, r);
+        const effect = ok ? 'blink-success' : 'blink-error';
+        selLeft.classList.add(effect); selRight.classList.add(effect);
+        setTimeout(() => { selLeft.classList.remove(effect); selRight.classList.remove(effect); }, 350);
+        if (ok) {
+          selLeft.classList.add('selected'); selRight.classList.add('selected');
+          selLeft.style.pointerEvents = 'none'; selRight.style.pointerEvents = 'none';
+          matchedCount++;
+          if (matchedCount >= (task.pairs || []).length) { const done = el('div', 'prompt', '✅ Все верно!'); done.style.color = '#2e7d32'; w.appendChild(done); enableNext(); }
         }
+        selLeft = null; selRight = null; highlight(leftCol, null); highlight(rightCol, null);
       }
+      w.appendChild(grid); return w;
     }
 
-    window.addEventListener("message", onMessage);
-
-    timeoutId = setTimeout(() => {
-      if (!responded) {
-        document.body.removeChild(frame);
-        window.removeEventListener("message", onMessage);
-        resolve({ exists: false, n });
-      }
-    }, 3000);
-
-    frame.onload = () => {
-      try {
-        // Если браузер показал 404 (в некоторых средах)
-        if (frame.contentDocument && frame.contentDocument.title === "404 Not Found") {
-          if (!responded) {
-            clearTimeout(timeoutId);
-            document.body.removeChild(frame);
-            window.removeEventListener("message", onMessage);
-            resolve({ exists: false, n });
-          }
-        }
-      } catch (e) {
-        // Доступ заблокирован — возможно, ошибка, но не 404
-      }
-    };
-
-    frame.onerror = () => {
-      if (!responded) {
-        clearTimeout(timeoutId);
-        document.body.removeChild(frame);
-        window.removeEventListener("message", onMessage);
-        resolve({ exists: false, n });
-      }
-    };
-
-    frame.src = filename + "?_=" + Date.now();
-    document.body.appendChild(frame);
-  });
-}
-
-    async function discoverTasks() {
-      const existingTasks = [];
-      let n = 1;
-
-      statusEl.textContent = "🔍 Ищем задания...";
-
-      while (true) {
-        const result = await checkTaskIsValid(n);
-
-        if (result.exists) {
-          existingTasks.push(`task${n}.html`);
-          n++;
-        } else {
-          break;
-        }
-
-        if (n > 200) break;
-      }
-
-      if (existingTasks.length === 0) {
-        statusEl.innerHTML = `
-          ❌ Не найдено ни одного <strong>настоящего</strong> задания.<br>
-          Убедитесь, что каждый <code>taskN.html</code> отправляет:<br>
-          <code>window.parent.postMessage({ type: "TASK_EXISTS", valid: true }, "*");</code>
-        `;
-        return;
-      }
-
-      tasks = shuffleArray(existingTasks);
-      discoveryCompleted = true;
-      statusEl.textContent = `✅ Найдено ${tasks.length} заданий.`;
-      updateProgress();
-
-      // 🔓 Показываем iframe только после поиска
-      document.getElementById("task-container").classList.add("active");
-
-      // Автомасштаб на мобильных
-      if (isMobile()) {
-        setScale(1);
-      }
-
-      loadTask(0);
+    function renderSelectMapping(task) {
+      const w = document.createElement('div'); if (task.prompt) w.appendChild(el('div', 'prompt', task.prompt));
+      (task.pairs || []).forEach(p => { const row = document.createElement('div'); row.className = 'task-card'; const title = document.createElement('div'); title.className = 'prompt'; title.textContent = p.char + ' →'; row.appendChild(title); const select = document.createElement('select'); const opts = shuffle(p.options || []); select.innerHTML = '<option value="">— выберите —</option>' + opts.map(o => `<option value="${o}">${o}</option>`).join(''); row.appendChild(select); row.dataset.correct = p.correct; w.appendChild(row); });
+      const msg = el('div', 'prompt'); const btn = button('Проверить', () => { const rows = Array.from(w.querySelectorAll('.task-card')); const all = rows.every(r => r.querySelector('select').value); if (!all) { msg.textContent = 'Заполните все.'; msg.style.color = '#c62828'; return; } const ok = rows.every(r => r.querySelector('select').value === r.dataset.correct); if (ok) { msg.textContent = '✅ Все верно!'; msg.style.color = '#2e7d32'; enableNext(); } else { msg.textContent = '❌ Проверьте пары.'; msg.style.color = '#c62828'; } });
+      w.appendChild(btn); w.appendChild(msg); return w;
     }
 
-    function loadTask(index) {
-  if (index >= tasks.length) {
-    // Скрыть iframe
-    iframe.style.display = "none";
-    nextBtn.disabled = true;
-
-    // Обновить статус
-    statusEl.innerHTML = `<div style="text-align: center;">
-      <h2>🎉 Поздравляем!</h2>
-      <p>Вы успешно завершили урок<br><strong>Древнекитайские оракульные надписи</strong>!</p>
-      <div id="fireworks" style="width: 100%; height: 200px; position: relative; background: #0000; border-radius: 8px; margin: 10px 0;"></div>
-    </div>`;
-
-    // Добавить фейерверки (простая реализация)
-    createFireworks();
-
-    // Через 5 секунд — редирект в ../
-    setTimeout(() => {
-      window.location.href = "../";
-    }, 5000);
-
-    updateProgress();
-    return;
-  }
-
-  hasProcessedHanzi = false;
-  const url = tasks[index] + "?_=" + Date.now();
-  console.log(`▶️ Загрузка: ${url}`);
-  iframe.src = url;
-
-  updateProgress();
-  nextBtn.disabled = true;
-  currentTaskIndex = index;
-}
-
-    function updateProgress() {
-      const progress = tasks.length > 0 ? (currentTaskIndex / tasks.length) * 100 : 0;
-      progressBar.style.width = `${progress}%`;
+    function renderArrangeChars(task) {
+      const w = document.createElement('div'); if (task.prompt) w.appendChild(el('div', 'prompt', task.prompt)); if (task.instruction) w.appendChild(el('div', 'prompt', task.instruction));
+      const pool = el('div', 'word-pool'); const drop = el('div', 'word-pool');
+      const addPh = () => { if (!drop.children.length) { const s = document.createElement('span'); s.style.color = '#90a4ae'; s.textContent = '[пусто]'; drop.appendChild(s); } };
+      addPh(); shuffle(task.pool || []).forEach(ch => pool.appendChild(token(ch, () => move(pool, drop, ch))));
+      const msg = el('div', 'prompt'); const btn = button('Проверить', () => { const cur = Array.from(drop.children).filter(n => n.dataset && n.dataset.t).map(n => n.dataset.t); const ok = arraysEqual(cur, task.expected || []); if (ok) { msg.textContent = '✅ Правильно!'; msg.style.color = '#2e7d32'; enableNext(); } else { msg.textContent = '❌ Попробуйте снова.'; msg.style.color = '#c62828'; } });
+      const controls = document.createElement('div'); controls.appendChild(btn); controls.appendChild(button('Сбросить', () => renderTask(task)));
+      w.appendChild(pool); w.appendChild(drop); w.appendChild(controls); w.appendChild(msg); return w;
     }
 
-    // Управление масштабом
-    function setScale(scale) {
-      currentScale = scale;
-      iframe.style.transform = `scale(${currentScale})`;
-      scaleValueEl.textContent = currentScale.toFixed(1);
+    function renderHanziDraw(task) {
+      const w = document.createElement('div'); if (task.prompt) w.appendChild(el('div', 'prompt', task.prompt)); const oracle = task.oracle || ''; w.appendChild(el('div', 'oracle', oracle));
+      const canvas = document.createElement('div'); canvas.id = 'hanzi-canvas'; canvas.style.width = '100%'; canvas.style.maxWidth = '360px'; canvas.style.height = '360px'; canvas.style.margin = '10px auto'; canvas.style.border = '1px solid #e0e0e0'; canvas.style.borderRadius = '8px'; w.appendChild(canvas);
+      const msg = el('div', 'prompt');
+      function ensureHanziWriter() { return new Promise((resolve) => { if (window.HanziWriter) return resolve(); const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js'; s.onload = () => resolve(); document.head.appendChild(s); }); }
+      ensureHanziWriter().then(() => { const writer = HanziWriter.create('hanzi-canvas', oracle, { width: canvas.clientWidth, height: canvas.clientHeight, showCharacter: false, showOutline: false, showHintAfterMisses: 1, highlightOnComplete: true, padding: 8 }); writer.quiz({ onComplete: function() { msg.textContent = '✅ Готово!'; msg.style.color = '#2e7d32'; enableNext(); } }); });
+      w.appendChild(msg); return w;
     }
 
-    zoomInBtn.addEventListener("click", () => {
-      if (currentScale < maxScale) {
-        setScale(Math.round((currentScale + scaleStep) * 10) / 10);
-      }
+    function arraysEqual(a,b){ if (a.length!==b.length) return false; for (let i=0;i<a.length;i++) if (a[i]!==b[i]) return false; return true; }
+    function button(label, onClick){ const b = document.createElement('button'); b.textContent = label; b.style.margin = '6px'; b.onclick = onClick; return b; }
+    function token(t, onClick){ const b = el('div', 'option-btn', t); b.dataset.t = t; b.onclick = onClick; return b; }
+    function move(from,to,t){ if (to.firstChild && to.firstChild.tagName==='SPAN') to.removeChild(to.firstChild); const node = Array.from(from.children).find(n => n.dataset && n.dataset.t===t); if (node) from.removeChild(node); const back = token(t, () => { to.removeChild(back); from.appendChild(token(t, () => move(from,to,t))); if (!to.children.length) { const s=document.createElement('span'); s.style.color='#90a4ae'; s.textContent='[пусто]'; to.appendChild(s);} }); to.appendChild(back); }
+    function highlight(col, btn){ Array.from(col.children).forEach(n => n.classList.remove('selected')); if (btn) btn.classList.add('selected'); }
+
+    nextBtn.addEventListener('click', () => {
+      state.currentIndex++;
+      if (state.currentIndex >= state.tasks.length) { taskContainer.innerHTML = '<div class="prompt" style="text-align:center">🎉 Поздравляем! Урок завершён.</div>'; nextBtn.disabled = true; setTimeout(() => { window.location.href = '../'; }, 4000); }
+      else { renderTask(state.tasks[state.currentIndex]); }
     });
 
-    zoomOutBtn.addEventListener("click", () => {
-      if (currentScale > minScale) {
-        setScale(Math.round((currentScale - scaleStep) * 10) / 10);
+    function renderTask(task) {
+      taskContainer.innerHTML = ''; disableNext(); const title = el('div', 'prompt', `Задание ${state.currentIndex + 1}/${state.tasks.length}`); taskContainer.appendChild(title);
+      let content;
+      switch(task.type){
+        case 'choice_single': content = renderChoiceSingle(task); break;
+        case 'choice_multi': content = renderChoiceMulti(task); break;
+        case 'arrange_words': content = renderArrangeWords(task); break;
+        case 'match_pairs': content = renderMatchPairs(task); break;
+        case 'select_mapping': content = renderSelectMapping(task); break;
+        case 'arrange_chars': content = renderArrangeChars(task); break;
+        case 'hanzi_draw': content = renderHanziDraw(task); break;
+        default: content = el('div', null, 'Неизвестный тип задания: ' + task.type);
       }
-    });
-
-    // Определение мобильного устройства
-    function isMobile() {
-      return window.innerWidth <= 768 || (navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+      taskContainer.appendChild(content); updateProgress();
     }
 
-    // Обработка сообщений от iframe
-    window.addEventListener("message", (event) => {
-      const { type, success } = event.data;
+    function tryFullscreen(){ const el = document.documentElement; const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen; if (req) { try{ req.call(el);}catch(_){} } window.removeEventListener('click', tryFullscreen, {capture:true}); }
+    window.addEventListener('click', tryFullscreen, { capture: true, once: true });
 
-      if (type === "DO_HANZI" && !hasProcessedHanzi && discoveryCompleted) {
-        hasProcessedHanzi = true;
-
-        const randomChar = lessonwords[Math.floor(Math.random() * lessonwords.length)];
-        const newSrc = `${tasks[currentTaskIndex]}?_=${Date.now()}#${randomChar}`;
-
-        console.log(`🎨 DO_HANZI: перезагрузка с #${randomChar}`);
-
-        iframe.src = '';
-        setTimeout(() => {
-          iframe.src = newSrc;
-        }, 10);
-
-        nextBtn.disabled = true;
-        return;
-      }
-
-      if (type === "TASK_RESULT") {
-        if (success) {
-          statusEl.textContent = "✅ Задание выполнено!";
-          nextBtn.disabled = false;
-        } else {
-          statusEl.textContent = "⏳ Задание загружается...";
-        }
-      }
-    });
-
-    nextBtn.addEventListener("click", () => {
-      currentTaskIndex++;
-      loadTask(currentTaskIndex);
-    });
-
-    // Запуск
-    discoverTasks();
-      function createFireworks() {
-  const container = document.getElementById("fireworks");
-  const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF", "#FFA500", "#FFFFFF"];
-  const particles = 50;
-
-  function createExplosion(x, y) {
-    for (let i = 0; i < particles; i++) {
-      const particle = document.createElement("div");
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 1 + Math.random() * 3;
-      const size = 2 + Math.random() * 4;
-
-      particle.style.position = "absolute";
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      particle.style.borderRadius = "50%";
-      particle.style.boxShadow = "0 0 6px currentColor";
-      particle.style.left = `${x}px`;
-      particle.style.top = `${y}px`;
-      particle.style.pointerEvents = "none";
-
-      container.appendChild(particle);
-
-      // Анимация
-      let dx = Math.cos(angle) * speed;
-      let dy = Math.sin(angle) * speed;
-      let opacity = 1;
-      let posX = x;
-      let posY = y;
-
-      const animate = () => {
-        opacity -= 0.02;
-        posX += dx;
-        posY += dy + 0.1; // гравитация
-        dy += 0.05;
-
-        particle.style.opacity = opacity;
-        particle.style.left = `${posX}px`;
-        particle.style.top = `${posY}px`;
-
-        if (opacity > 0) {
-          requestAnimationFrame(animate);
-        } else {
-          container.removeChild(particle);
-        }
-      };
-
-      requestAnimationFrame(animate);
+    async function init(){
+      try{
+        if ('serviceWorker' in navigator) { try { await navigator.serviceWorker.register('./sw.js'); } catch(_){} }
+        const res = await fetch('./tasks.json?_=' + Date.now()); const data = await res.json();
+        const base = shuffle(data.tasks || []);
+        const hanziNum = Number(data.number_of_hanzi || 0) | 0;
+        hanziQueue = hanziNum > 0 ? await buildHanziQueue('./theory.html', hanziNum) : [];
+        state.tasks = hanziQueue.length ? injectHanziTasks(base, hanziQueue) : base;
+        setMessage(`✅ Найдено ${state.tasks.length} заданий.`);
+        renderTask(state.tasks[0]);
+      }catch(e){ setMessage('❌ Не удалось загрузить задания.', false); }
     }
-  }
-
-  // Запуск нескольких взрывов
-  setInterval(() => {
-    const x = 50 + Math.random() * (container.offsetWidth - 100);
-    const y = 100 + Math.random() * (container.offsetHeight - 100);
-    createExplosion(x, y);
-  }, 400);
-}
+    init();
   </script>
 </body>
 </html>
