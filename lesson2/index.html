@@ -2,7 +2,11 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1976d2" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="./manifest.webmanifest" />
   <title>Урок 2 — Практика</title>
   <style>
     html, body {
@@ -43,6 +47,7 @@
       padding: 12px;
       overflow: auto;
       min-height: 0;
+      max-height: calc(100vh - 140px);
     }
     .controls { display: flex; justify-content: center; }
     #next-btn {
@@ -81,9 +86,12 @@
 
     @media (max-width: 768px) {
       #task-container { padding: 10px; }
-      .oracle { font-size: 21px; }
+      .oracle { font-size: 21px; word-break: break-word; }
       .option-btn, .option-radio, .option-check { font-size: 16px; padding: 10px; }
       .word-box { font-size: 16px; }
+    }
+    @supports (padding: env(safe-area-inset-bottom)) {
+      body { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
@@ -308,7 +316,8 @@
         title.textContent = p.char + ' →';
         row.appendChild(title);
         const select = document.createElement('select');
-        select.innerHTML = '<option value="">— выберите —</option>' + (p.options || []).map(o => `<option value="${o}">${o}</option>`).join('');
+        const opts = shuffle(p.options || []);
+        select.innerHTML = '<option value="">— выберите —</option>' + opts.map(o => `<option value="${o}">${o}</option>`).join('');
         row.appendChild(select);
         row.dataset.char = p.char;
         row.dataset.correct = p.correct;
@@ -493,8 +502,22 @@
       }
     });
 
+    // Try fullscreen on first user interaction (Android PWA friendly)
+    function tryFullscreen() {
+      const el = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if (req) {
+        try { req.call(el); } catch (_) {}
+      }
+      window.removeEventListener('click', tryFullscreen, { capture: true });
+    }
+    window.addEventListener('click', tryFullscreen, { capture: true, once: true });
+
     async function init() {
       try {
+        if ('serviceWorker' in navigator) {
+          try { await navigator.serviceWorker.register('./sw.js'); } catch (_) {}
+        }
         const res = await fetch('./tasks.json?_=' + Date.now());
         const data = await res.json();
         state.tasks = shuffle(data.tasks || []);
