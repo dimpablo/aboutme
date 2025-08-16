@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Урок 2 — Практика</title>
+  <style>
+    html, body {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      gap: 10px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      color: #555;
+      flex-shrink: 0;
+    }
+    #progress-container {
+      width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden;
+    }
+    #progress-bar { height: 100%; width: 0%; background: #4caf50; transition: width 0.3s ease; }
+    #task-container {
+      flex: 1;
+      width: 100%;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+      padding: 12px;
+      overflow: auto;
+      min-height: 0;
+    }
+    .controls { display: flex; justify-content: center; }
+    #next-btn {
+      padding: 14px 24px;
+      font-size: 18px; font-weight: 600; color: #fff; background: #1976d2; border: 0; border-radius: 12px; width: 90%; max-width: 320px; box-shadow: 0 4px 6px rgba(0,0,0,.1);
+    }
+    #next-btn:disabled { background: #bdbdbd; }
+
+    .prompt { font-size: 18px; font-weight: 600; margin: 4px 0 8px; text-align: center; }
+    .oracle { font-size: 22px; font-weight: 700; text-align: center; margin: 6px 0; }
+    .pinyin-wrap { margin: 8px 0; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
+    .pinyin-toggle { width: 100%; background: #f5f5f5; border: none; padding: 8px 12px; text-align: left; color: #555; font-size: 14px; }
+    .pinyin { padding: 0 12px; max-height: 0; overflow: hidden; transition: max-height .25s ease, padding .25s ease; background: #fafafa; color: #666; font-style: italic; }
+    .pinyin.expanded { padding: 8px 12px; max-height: 80px; }
+
+    .options { display: grid; gap: 8px; margin: 10px 0; }
+    .option-btn, .option-radio, .option-check {
+      padding: 10px 12px; background: #f5f7fb; border: 1px solid #dfe3ea; border-radius: 8px; font-size: 16px; text-align: center; cursor: pointer;
+    }
+    .option-btn.selected, label.option-radio.selected, label.option-check.selected { background: #e4f1ff; border-color: #1976d2; }
+
+    .message { margin-top: 10px; text-align: center; font-weight: 600; }
+    .success { color: #2e7d32; }
+    .error { color: #c62828; }
+
+    .word-pool, .drop-area {
+      min-height: 36px; padding: 6px; display: flex; flex-wrap: wrap; gap: 6px; border: 1px dashed #b0bec5; border-radius: 8px; background: #fbfdff; justify-content: center;
+    }
+    .word-box { background: #fff; border: 1px solid #cfd8dc; border-radius: 6px; padding: 6px 10px; font-size: 16px; cursor: pointer; }
+
+    .pair { padding: 8px; background: #f9fbff; border: 1px solid #e3eaf3; border-radius: 8px; }
+    .pair h4 { margin: 0 0 6px; font-size: 14px; color: #455a64; text-align: center; }
+    select { width: 100%; padding: 8px 10px; border: 1px solid #cfd8dc; border-radius: 8px; font-size: 15px; background: #fff; }
+
+    .section-title { font-size: 14px; color: #607d8b; text-align: center; margin: 6px 0; }
+
+    @media (max-width: 768px) {
+      #task-container { padding: 10px; }
+      .oracle { font-size: 21px; }
+      .option-btn, .option-radio, .option-check { font-size: 16px; padding: 10px; }
+      .word-box { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div id="status">⏳ Загружаем задания урока 2…</div>
+    <div id="scale-placeholder"></div>
+  </div>
+
+  <div id="progress-container"><div id="progress-bar"></div></div>
+  <div id="task-container"></div>
+  <div class="controls"><button id="next-btn" disabled>Следующее задание</button></div>
+
+  <script>
+    // Utility
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    const state = {
+      tasks: [],
+      currentIndex: 0
+    };
+
+    const statusEl = document.getElementById('status');
+    const progressBar = document.getElementById('progress-bar');
+    const taskContainer = document.getElementById('task-container');
+    const nextBtn = document.getElementById('next-btn');
+
+    function updateProgress() {
+      const pct = state.tasks.length ? (state.currentIndex / state.tasks.length) * 100 : 0;
+      progressBar.style.width = pct + '%';
+    }
+
+    function setMessage(text, ok) {
+      statusEl.textContent = text;
+      if (ok === true) statusEl.style.color = '#2e7d32';
+      else if (ok === false) statusEl.style.color = '#c62828';
+      else statusEl.style.color = '#555';
+    }
+
+    function enableNext() { nextBtn.disabled = false; }
+    function disableNext() { nextBtn.disabled = true; }
+
+    // Renderers for task types
+    function renderChoiceSingle(task) {
+      const wrapper = document.createElement('div');
+      if (task.prompt) wrapper.appendChild(el('div', 'prompt', task.prompt));
+      if (task.oracle) wrapper.appendChild(el('div', 'oracle', task.oracle));
+      if (task.pinyin) wrapper.appendChild(renderPinyin(task.pinyin));
+      if (task.question) wrapper.appendChild(el('div', 'section-title', task.question));
+
+      const optionsEl = el('div', 'options');
+      const options = shuffle(task.options || []);
+      let selected = null;
+
+      options.forEach(opt => {
+        const label = document.createElement('label');
+        label.className = 'option-radio';
+        const input = document.createElement('input');
+        input.type = 'radio'; input.name = 'q'; input.style.display = 'none';
+        input.addEventListener('change', () => {
+          selected = opt;
+          document.querySelectorAll('.option-radio').forEach(n => n.classList.remove('selected'));
+          label.classList.add('selected');
+        });
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(opt.text));
+        optionsEl.appendChild(label);
+      });
+
+      const result = el('div', 'message');
+      const checkBtn = primaryButton('Проверить', () => {
+        if (!selected) { result.textContent = 'Выберите вариант.'; result.className = 'message error'; return; }
+        const ok = !!selected.correct;
+        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; enableNext(); }
+        else { result.textContent = '❌ Неверно.'; result.className = 'message error'; }
+      });
+
+      wrapper.appendChild(optionsEl);
+      wrapper.appendChild(checkBtn);
+      wrapper.appendChild(result);
+      return wrapper;
+    }
+
+    function renderChoiceMulti(task) {
+      const wrapper = document.createElement('div');
+      if (task.prompt) wrapper.appendChild(el('div', 'prompt', task.prompt));
+
+      const optionsEl = el('div', 'options');
+      const options = shuffle(task.items || []);
+      const selected = new Map();
+
+      options.forEach(opt => {
+        const label = document.createElement('label');
+        label.className = 'option-check';
+        const input = document.createElement('input');
+        input.type = 'checkbox'; input.style.display = 'none';
+        input.addEventListener('change', () => {
+          selected.set(opt.text, input.checked);
+          label.classList.toggle('selected', input.checked);
+        });
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(opt.text));
+        optionsEl.appendChild(label);
+        selected.set(opt.text, false);
+      });
+
+      const result = el('div', 'message');
+      const checkBtn = primaryButton('Проверить', () => {
+        const ok = (task.items || []).every(item => !!selected.get(item.text) === !!item.correct);
+        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; enableNext(); }
+        else { result.textContent = '❌ Проверьте выбор.'; result.className = 'message error'; }
+      });
+
+      wrapper.appendChild(optionsEl);
+      wrapper.appendChild(checkBtn);
+      wrapper.appendChild(result);
+      return wrapper;
+    }
+
+    function renderArrangeWords(task) {
+      const wrapper = document.createElement('div');
+      if (task.prompt) wrapper.appendChild(el('div', 'prompt', task.prompt));
+      if (task.oracle) wrapper.appendChild(el('div', 'oracle', task.oracle));
+      if (task.pinyin) wrapper.appendChild(renderPinyin(task.pinyin));
+
+      const pool = el('div', 'word-pool');
+      const drop = el('div', 'drop-area');
+      addPlaceholder(drop);
+
+      const shuffled = shuffle(task.pool || []);
+      shuffled.forEach(w => pool.appendChild(wordBox(w, () => moveToken(pool, drop, w))));
+
+      const result = el('div', 'message');
+      const checkBtn = primaryButton('Проверить', () => {
+        const current = Array.from(drop.children).filter(n => n.dataset && n.dataset.token).map(n => n.dataset.token);
+        const ok = (task.accepted || []).some(seq => arraysEqual(seq, current));
+        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; enableNext(); }
+        else { result.textContent = '❌ Попробуйте снова.'; result.className = 'message error'; }
+      });
+
+      const controls = document.createElement('div');
+      controls.style.textAlign = 'center';
+      controls.appendChild(checkBtn);
+      controls.appendChild(secondaryButton('Сбросить', () => renderTask(task)));
+
+      wrapper.appendChild(pool);
+      wrapper.appendChild(drop);
+      wrapper.appendChild(controls);
+      wrapper.appendChild(result);
+      return wrapper;
+    }
+
+    function renderMatchPairs(task) {
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(el('div', 'prompt', 'Сопоставьте'));
+      const leftTitle = el('div', 'section-title', task.leftTitle || 'Левая колонка');
+      const rightTitle = el('div', 'section-title', task.rightTitle || 'Правая колонка');
+
+      const leftCol = document.createElement('div');
+      const rightCol = document.createElement('div');
+      const grid = document.createElement('div');
+      grid.style.display = 'grid'; grid.style.gridTemplateColumns = '1fr 1fr'; grid.style.gap = '10px';
+      grid.appendChild(leftCol); grid.appendChild(rightCol);
+
+      const pairs = shuffle(task.pairs || []);
+      const leftChars = pairs.map(p => p.left);
+      const rightVals = shuffle(pairs.map(p => p.right));
+
+      const selected = { left: null, right: null };
+      const matched = new Set();
+
+      leftChars.forEach(ch => {
+        const btn = el('div', 'option-btn', ch);
+        btn.addEventListener('click', () => { selected.left = ch; highlight(btn, 'left'); attempt(); });
+        leftCol.appendChild(btn);
+      });
+      rightVals.forEach(rv => {
+        const btn = el('div', 'option-btn', rv);
+        btn.addEventListener('click', () => { selected.right = rv; highlight(btn, 'right'); attempt(); });
+        rightCol.appendChild(btn);
+      });
+
+      function attempt() {
+        if (!selected.left || !selected.right) return;
+        const ok = (task.pairs || []).some(p => p.left === selected.left && p.right === selected.right);
+        const pairKey = selected.left + '→' + selected.right;
+        if (ok && !matched.has(pairKey)) {
+          matched.add(pairKey);
+          markMatched(leftCol, selected.left);
+          markMatched(rightCol, selected.right);
+          selected.left = null; selected.right = null;
+          if (matched.size >= (task.pairs || []).length) {
+            wrapper.appendChild(el('div', 'message success', '✅ Все верно!'));
+            enableNext();
+          }
+        } else {
+          // reset selection highlight only
+          selected.left = null; selected.right = null;
+        }
+      }
+
+      wrapper.appendChild(leftTitle);
+      wrapper.appendChild(rightTitle);
+      wrapper.appendChild(grid);
+      return wrapper;
+    }
+
+    function renderSelectMapping(task) {
+      const wrapper = document.createElement('div');
+      if (task.prompt) wrapper.appendChild(el('div', 'prompt', task.prompt));
+
+      (task.pairs || []).forEach(p => {
+        const row = el('div', 'pair');
+        const title = document.createElement('h4');
+        title.textContent = p.char + ' →';
+        row.appendChild(title);
+        const select = document.createElement('select');
+        select.innerHTML = '<option value="">— выберите —</option>' + (p.options || []).map(o => `<option value="${o}">${o}</option>`).join('');
+        row.appendChild(select);
+        row.dataset.char = p.char;
+        row.dataset.correct = p.correct;
+        wrapper.appendChild(row);
+      });
+
+      const result = el('div', 'message');
+      const btn = primaryButton('Проверить', () => {
+        const rows = Array.from(wrapper.querySelectorAll('.pair'));
+        const allFilled = rows.every(r => r.querySelector('select').value);
+        if (!allFilled) { result.textContent = 'Заполните все.'; result.className = 'message error'; return; }
+        const ok = rows.every(r => r.querySelector('select').value === r.dataset.correct);
+        if (ok) { result.textContent = '✅ Все верно!'; result.className = 'message success'; enableNext(); }
+        else { result.textContent = '❌ Проверьте пары.'; result.className = 'message error'; }
+      });
+      wrapper.appendChild(btn);
+      wrapper.appendChild(result);
+      return wrapper;
+    }
+
+    function renderArrangeChars(task) {
+      const wrapper = document.createElement('div');
+      if (task.prompt) wrapper.appendChild(el('div', 'prompt', task.prompt));
+      if (task.instruction) wrapper.appendChild(el('div', 'section-title', task.instruction));
+
+      const pool = el('div', 'word-pool');
+      const drop = el('div', 'drop-area');
+      addPlaceholder(drop);
+
+      const shuffled = shuffle(task.pool || []);
+      shuffled.forEach(ch => pool.appendChild(wordBox(ch, () => moveToken(pool, drop, ch))));
+
+      const result = el('div', 'message');
+      const checkBtn = primaryButton('Проверить', () => {
+        const current = Array.from(drop.children).filter(n => n.dataset && n.dataset.token).map(n => n.dataset.token);
+        const ok = arraysEqual(current, task.expected || []);
+        if (ok) { result.textContent = '✅ Правильно!'; result.className = 'message success'; enableNext(); }
+        else { result.textContent = '❌ Попробуйте снова.'; result.className = 'message error'; }
+      });
+
+      const controls = document.createElement('div');
+      controls.style.textAlign = 'center';
+      controls.appendChild(checkBtn);
+      controls.appendChild(secondaryButton('Сбросить', () => renderTask(task)));
+
+      wrapper.appendChild(pool);
+      wrapper.appendChild(drop);
+      wrapper.appendChild(controls);
+      wrapper.appendChild(result);
+      return wrapper;
+    }
+
+    // Helpers
+    function el(tag, cls, text) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text !== undefined) n.textContent = text;
+      return n;
+    }
+    function renderPinyin(text) {
+      const wrap = el('div', 'pinyin-wrap');
+      const btn = el('button', 'pinyin-toggle', 'Показать пиньинь');
+      const body = el('div', 'pinyin', text);
+      btn.addEventListener('click', () => { body.classList.toggle('expanded'); });
+      wrap.appendChild(btn); wrap.appendChild(body);
+      return wrap;
+    }
+    function primaryButton(label, onClick) {
+      const b = document.createElement('button');
+      b.textContent = label; b.style.margin = '6px'; b.addEventListener('click', onClick); return b;
+    }
+    function secondaryButton(label, onClick) {
+      const b = document.createElement('button');
+      b.textContent = label; b.style.margin = '6px'; b.style.background = '#90a4ae'; b.addEventListener('click', onClick); return b;
+    }
+    function arraysEqual(a, b) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false; return true;
+    }
+    function wordBox(token, onClick) {
+      const b = el('div', 'word-box', token); b.dataset.token = token; b.addEventListener('click', onClick); return b;
+    }
+    function addPlaceholder(drop) {
+      if (drop.children.length === 0) {
+        const ph = document.createElement('span'); ph.style.color = '#90a4ae'; ph.textContent = '[пусто]'; drop.appendChild(ph);
+      }
+    }
+    function moveToken(pool, drop, token) {
+      // remove placeholder
+      if (drop.firstChild && drop.firstChild.tagName === 'SPAN') drop.removeChild(drop.firstChild);
+      // remove from pool
+      const inPool = Array.from(pool.children).find(n => n.dataset && n.dataset.token === token);
+      if (inPool) pool.removeChild(inPool);
+      // add to drop
+      drop.appendChild(wordBox(token, () => { drop.removeChild(event.currentTarget); pool.appendChild(wordBox(token, () => moveToken(pool, drop, token))); if (!drop.children.length) addPlaceholder(drop); }));
+    }
+    function highlight(btn, scope) {
+      const cls = 'selected';
+      btn.classList.add(cls);
+      const parent = btn.parentElement;
+      Array.from(parent.children).forEach(n => { if (n !== btn) n.classList.remove(cls); });
+    }
+    function markMatched(col, text) {
+      Array.from(col.children).forEach(n => { if (n.textContent === text) { n.classList.add('selected'); n.style.pointerEvents = 'none'; } });
+    }
+
+    function renderTask(task) {
+      taskContainer.innerHTML = '';
+      disableNext();
+      const title = el('div', 'prompt', `Задание ${state.currentIndex + 1}/${state.tasks.length}`);
+      taskContainer.appendChild(title);
+
+      let content;
+      switch (task.type) {
+        case 'choice_single': content = renderChoiceSingle(task); break;
+        case 'choice_multi': content = renderChoiceMulti(task); break;
+        case 'arrange_words': content = renderArrangeWords(task); break;
+        case 'match_pairs': content = renderMatchPairs(task); break;
+        case 'select_mapping': content = renderSelectMapping(task); break;
+        case 'arrange_chars': content = renderArrangeChars(task); break;
+        case 'multi_group_single': content = renderMultiGroupSingle(task); break;
+        default:
+          content = el('div', null, 'Неизвестный тип задания: ' + task.type);
+      }
+      taskContainer.appendChild(content);
+      updateProgress();
+    }
+
+    function renderMultiGroupSingle(task) {
+      const wrapper = document.createElement('div');
+      if (task.prompt) wrapper.appendChild(el('div', 'prompt', task.prompt));
+
+      (task.groups || []).forEach(group => {
+        const g = document.createElement('div');
+        g.style.borderTop = '1px dashed #e0e0e0';
+        g.style.marginTop = '8px';
+        g.style.paddingTop = '8px';
+        g.appendChild(el('div', 'oracle', group.text || group.oracle || ''));
+        if (group.pinyin) g.appendChild(renderPinyin(group.pinyin));
+        const optionsEl = el('div', 'options');
+        const options = shuffle(group.options || []);
+        let selected = null;
+        options.forEach(opt => {
+          const label = document.createElement('label');
+          label.className = 'option-radio';
+          const input = document.createElement('input'); input.type = 'radio'; input.name = 'g_' + (group.id || Math.random()); input.style.display = 'none';
+          input.addEventListener('change', () => { selected = opt; document.querySelectorAll(`[data-group="${group.id}"]`).forEach(n => n.classList.remove('selected')); label.classList.add('selected'); });
+          label.dataset.group = group.id;
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(opt));
+          optionsEl.appendChild(label);
+        });
+        g.appendChild(optionsEl);
+        g.dataset.correct = group.correctText || '';
+        g.dataset.groupId = group.id || '';
+        wrapper.appendChild(g);
+      });
+
+      const result = el('div', 'message');
+      const btn = primaryButton('Проверить', () => {
+        const groups = Array.from(wrapper.querySelectorAll('div[data-group-id]'));
+        const ok = groups.every(g => {
+          const sel = Array.from(g.querySelectorAll('label.option-radio.selected')).map(n => n.textContent.trim())[0] || '';
+          return sel === (g.dataset.correct || '');
+        });
+        if (ok) { result.textContent = '✅ Верно!'; result.className = 'message success'; enableNext(); }
+        else { result.textContent = '❌ Проверьте ответы.'; result.className = 'message error'; }
+      });
+      wrapper.appendChild(btn);
+      wrapper.appendChild(result);
+      return wrapper;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      state.currentIndex++;
+      if (state.currentIndex >= state.tasks.length) {
+        taskContainer.innerHTML = '<div class="prompt" style="text-align:center">🎉 Поздравляем! Урок завершён.</div>';
+        nextBtn.disabled = true;
+        setTimeout(() => { window.location.href = '../'; }, 4000);
+      } else {
+        renderTask(state.tasks[state.currentIndex]);
+      }
+    });
+
+    async function init() {
+      try {
+        const res = await fetch('./tasks.json?_=' + Date.now());
+        const data = await res.json();
+        state.tasks = shuffle(data.tasks || []);
+        setMessage(`✅ Найдено ${state.tasks.length} заданий.`);
+        renderTask(state.tasks[0]);
+      } catch (e) {
+        setMessage('❌ Не удалось загрузить задания.', false);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
