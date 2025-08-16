@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Урок 2 — Иероглифика</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      display: flex; flex-direction: column; gap: 10px; padding: 10px; overflow: hidden;
+    }
+    .header { display: flex; justify-content: space-between; align-items: center; font-size: 16px; color: #555; }
+    #status { font-size: 14px; }
+    #progress-container { height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+    #progress-bar { height: 100%; width: 0%; background: #4caf50; transition: width .3s ease; }
+    #board { flex: 1; display: flex; align-items: center; justify-content: center; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.08); min-height: 0; }
+    #char { width: 320px; height: 320px; }
+    .controls { display: flex; gap: 8px; justify-content: center; }
+    button.primary { padding: 12px 18px; background: #1976d2; color: #fff; border: 0; border-radius: 12px; font-size: 16px; }
+    button.secondary { padding: 10px 16px; background: #90a4ae; color: #fff; border: 0; border-radius: 10px; font-size: 15px; }
+    .msg { text-align: center; font-weight: 600; }
+
+    @media (max-width: 480px) {
+      #char { width: 260px; height: 260px; }
+      button.primary { width: 90%; max-width: 340px; }
+      button.secondary { width: 90%; max-width: 340px; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+</head>
+<body>
+  <div class="header">
+    <div id="status">⏳ Готовим иероглифы урока 2…</div>
+    <div id="counter"></div>
+  </div>
+  <div id="progress-container"><div id="progress-bar"></div></div>
+  <div id="board"><div id="char"></div></div>
+  <div class="controls">
+    <button class="secondary" id="skip-btn">Пропустить</button>
+    <button class="primary" id="next-btn" disabled>Следующий</button>
+  </div>
+  <div class="msg" id="msg"></div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const counterEl = document.getElementById('counter');
+    const progressBar = document.getElementById('progress-bar');
+    const board = document.getElementById('char');
+    const btnSkip = document.getElementById('skip-btn');
+    const btnNext = document.getElementById('next-btn');
+    const msgEl = document.getElementById('msg');
+
+    let writer = null;
+    const queue = [];
+    let currentIndex = 0;
+
+    function setProgress() {
+      const total = queue.length || 1;
+      const pct = Math.min(100, Math.round((currentIndex / total) * 100));
+      progressBar.style.width = pct + '%';
+      counterEl.textContent = total ? `${currentIndex}/${total}` : '';
+    }
+
+    async function extractCharsFromTheory() {
+      const res = await fetch('./theory.html?_=' + Date.now());
+      const html = await res.text();
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      // Collect characters from dictionary section: elements with class 'char-item' -> innerText of first <span>
+      const items = Array.from(div.querySelectorAll('.char-list .char-item > span'));
+      const chars = [];
+      items.forEach(span => {
+        // span contains like "弗fú" (char + pinyin) — take leading CJK char
+        const text = span.childNodes[0]?.textContent || span.textContent || '';
+        const ch = (text.match(/[\u4e00-\u9fff\uf900-\ufaff]/) || [null])[0];
+        if (ch) chars.push(ch);
+      });
+      // unique preserve order
+      const uniq = [];
+      const seen = new Set();
+      chars.forEach(c => { if (!seen.has(c)) { seen.add(c); uniq.push(c); } });
+      return uniq;
+    }
+
+    function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    function mountChar(ch) {
+      board.innerHTML = '';
+      writer = HanziWriter.create('char', ch, {
+        width: board.clientWidth,
+        height: board.clientHeight,
+        showCharacter: false,
+        showOutline: false,
+        showHintAfterMisses: 1,
+        highlightOnComplete: true,
+        padding: 8
+      });
+      writer.quiz({
+        onComplete: function() {
+          msgEl.textContent = '✅ Отлично!';
+          btnNext.disabled = false;
+          currentIndex++;
+          setProgress();
+          if (currentIndex >= queue.length) {
+            statusEl.textContent = '🎉 Все иероглифы пройдены!';
+            btnNext.disabled = true; btnSkip.disabled = true;
+            setTimeout(() => { window.location.href = '../'; }, 3500);
+          }
+        }
+      });
+      statusEl.textContent = `Пишите: ${ch}`;
+      btnNext.disabled = true;
+      msgEl.textContent = '';
+    }
+
+    btnSkip.addEventListener('click', () => {
+      if (currentIndex < queue.length) {
+        currentIndex++;
+        setProgress();
+        if (currentIndex < queue.length) mountChar(queue[currentIndex]);
+      }
+    });
+
+    btnNext.addEventListener('click', () => {
+      if (currentIndex < queue.length) {
+        if (currentIndex < queue.length) mountChar(queue[currentIndex]);
+      }
+    });
+
+    async function init() {
+      try {
+        const chars = await extractCharsFromTheory();
+        if (!chars.length) throw new Error('chars not found');
+        queue.push(...shuffle(chars));
+        currentIndex = 0;
+        setProgress();
+        mountChar(queue[currentIndex]);
+      } catch (e) {
+        statusEl.textContent = '❌ Не удалось получить словарь из theory.html';
+      }
+    }
+
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
