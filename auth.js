@@ -112,23 +112,39 @@ window.PointsAPI = { get user() { return currentUser; }, get: () => cachedPoints
   const av = document.getElementById('avatar');
   const loginBtn = document.getElementById('loginBtn');
   const nameEl = document.getElementById('userName');
-  if (!pt && !av && !loginBtn) return;
+  const userInfo = document.getElementById('user-info');
+  const userPhoto = document.getElementById('user-photo');
+  const userName = document.getElementById('user-name');
+  
+  if (!pt && !av && !loginBtn && !userInfo) return;
+  
   subscribe(({ user, points }) => {
     if (pt) pt.textContent = points + ' баллов';
     if (user) {
-      if (av) {
-        const img = av.querySelector('img');
-        if (img && user.photoURL) img.src = user.photoURL;
-        av.style.display = 'block';
-      }
+      // Пользователь авторизован
       if (loginBtn) { loginBtn.style.display = 'none'; }
+      if (av) av.style.display = 'none';
+      
+      if (userInfo) {
+        userInfo.style.display = 'flex';
+        if (userPhoto && user.photoURL) {
+          userPhoto.src = user.photoURL;
+        }
+        if (userName) {
+          userName.textContent = user.displayName || user.email || 'Пользователь';
+        }
+      }
+      
       if (nameEl) { nameEl.textContent = user.displayName || ''; }
     } else {
+      // Пользователь не авторизован
+      if (loginBtn) { loginBtn.style.display = 'inline-block'; }
       if (av) av.style.display = 'none';
-      if (loginBtn) loginBtn.style.display = 'inline-block';
-      if (nameEl) nameEl.textContent = '';
+      if (userInfo) userInfo.style.display = 'none';
+      if (nameEl) { nameEl.textContent = ''; }
     }
   });
+  
   if (loginBtn) loginBtn.addEventListener('click', () => login());
   if (av) av.addEventListener('click', () => { if (confirm('Выйти из аккаунта?')) logout(); });
 })();
