@@ -82,6 +82,65 @@
       margin: 15px 0;
       font-size: 0.96em;
     }
+
+    /* Таблица орекулярного текста (сохранение авторского текста без потерь) */
+    .oracle-table {
+      border-collapse: collapse;
+      margin: 20px auto;
+      font-family: 'Noto Serif CJK SC', 'KaiTi', serif;
+      font-size: 1.2em;
+      table-layout: fixed;
+      width: 95%;
+      max-width: 1200px;
+    }
+    .oracle-table td {
+      padding: 6px 8px;
+      border: 1px solid #d4d4d4;
+      text-align: center;
+      min-width: 0;
+      width: calc(95% / 16);
+      position: relative;
+      word-break: keep-all;
+      white-space: nowrap;
+    }
+    .line-num, .col-num {
+      background-color: #f0f4f8;
+      color: #1a4f72;
+      font-weight: bold;
+      font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      font-size: 0.85em;
+      white-space: nowrap;
+    }
+    .lesson-badge {
+      display: inline-block;
+      background: #e6f2ff;
+      color: #1a4f72;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      margin-left: 5px;
+    }
+    .char-tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 300px;
+      background: #1a4f72;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.85em;
+      text-align: left;
+      white-space: normal;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(26, 79, 114, 0.3);
+      line-height: 1.5;
+      pointer-events: none;
+    }
+    td:hover .char-tooltip { display: block; }
   </style>
 </head>
 <body>
@@ -90,6 +149,10 @@
   <p>В этом уроке мы изучим предлог 自 zì и конструкцию 自...至于 zì... zhì yú для обозначения временных и пространственных рамок.</p>
 
   <h2>ТЕКСТ УРОКА</h2>
+  <div class="text">
+    <h3>Текст урока (таблица с разметкой позиций)</h3>
+    <table class="oracle-table" id="oracleTable"></table>
+  </div>
   
   <div class="original">
     壬寅卜㱿貞自今至于甲辰子商烖基方自今至于甲辰子商弗其烖基方自今壬寅至于甲辰子商烖基方自今至于丁巳我烖賽王占曰丁巳我毋其烖于來甲子烖甲子卜中貞求年自上甲求自上甲癸亥卜中貞求年自上甲至于多后貞于示壬求年其自西來雨其自東來雨其自南來雨其自北來雨來雨自西自今五日不雨
@@ -263,5 +326,95 @@
   <div class="note">
     <p><strong>Совет:</strong> Обратите особое внимание на то, как предлог 自 изменяет значение временных выражений. Сравните конструкции с 自 и без него для лучшего понимания.</p>
   </div>
+
+  <script>
+    // Набор данных об иероглифах с указанием урока (для подсказок).
+    // Содержит базовый набор (уроки 1–3) и добавления для урока 4.
+    const charData = {
+      // Базовые служебные и частотные (уроки 1–3)
+      '于': { pinyin: 'yú', meaning: 'Предлог: в, на, к (универсальный предлог)', lesson: 3 },
+      '王': { pinyin: 'wáng', meaning: 'Правитель; ван', lesson: 1 },
+      '卜': { pinyin: 'bǔ', meaning: 'Гадать', lesson: 1 },
+      '占': { pinyin: 'zhān', meaning: 'Истолковывать гадание', lesson: 1 },
+      '曰': { pinyin: 'yuē', meaning: 'Говорить; вводит прямую речь', lesson: 1 },
+      '我': { pinyin: 'wǒ', meaning: 'Личное местоимение: я/мы', lesson: 2 },
+      '甲': { pinyin: 'jiǎ', meaning: 'Небесный ствол (1-й)', lesson: 2 },
+      '辰': { pinyin: 'chén', meaning: 'Земная ветвь (5-я)', lesson: 2 },
+      '丁': { pinyin: 'dīng', meaning: 'Небесный ствол (4-й)', lesson: 3 },
+      '巳': { pinyin: 'sì', meaning: 'Земная ветвь (6-я)', lesson: 2 },
+      '今': { pinyin: 'jīn', meaning: 'Ныне, теперь', lesson: 2 },
+
+      // Урок 4 (добавлено по этому уроку)
+      '壬': { pinyin: 'rén', meaning: 'Небесный ствол (9-й)', lesson: 4 },
+      '自': { pinyin: 'zì', meaning: 'Предлог «от, с, начиная с»; также «сам»', lesson: 4 },
+      '至': { pinyin: 'zhì', meaning: 'Достигать; в сочет. 自...至于', lesson: 4 },
+      '子': { pinyin: 'zǐ', meaning: 'Земная ветвь (1-я); «сын»', lesson: 4 },
+      '烖': { pinyin: 'zāi', meaning: 'Бедствие, «причинять бедствие»', lesson: 4 },
+      '基': { pinyin: 'jī', meaning: 'Основание; в названии племени 基方', lesson: 4 },
+      '方': { pinyin: 'fāng', meaning: 'Сторона, направление; племя', lesson: 4 },
+      '賽': { pinyin: 'sài', meaning: 'Жертвоприношение, молитва', lesson: 4 },
+      '中': { pinyin: 'zhōng', meaning: 'Середина; также имя гадателя', lesson: 4 },
+      '后': { pinyin: 'hòu', meaning: 'Правитель, князь (титул)', lesson: 4 },
+      '示': { pinyin: 'shì', meaning: 'Показывать; имя предка 示壬', lesson: 4 },
+      '西': { pinyin: 'xī', meaning: 'Запад', lesson: 4 }
+    };
+
+    // Строим табличное представление из точного текста в блоке .original
+    function createOracleTable() {
+      const table = document.getElementById('oracleTable');
+      if (!table) return;
+
+      // Извлекаем авторский текст без изменений
+      const originalDiv = document.querySelector('.original');
+      if (!originalDiv) return;
+      const raw = (originalDiv.textContent || '')
+        .replace(/\s+/g, '')
+        .trim();
+      if (!raw) return;
+
+      // Заголовок колонок 1..15
+      const headerRow = document.createElement('tr');
+      const emptyCell = document.createElement('td');
+      emptyCell.className = 'line-num';
+      headerRow.appendChild(emptyCell);
+      for (let i = 1; i <= 15; i++) {
+        const th = document.createElement('td');
+        th.className = 'col-num';
+        th.textContent = i;
+        headerRow.appendChild(th);
+      }
+      table.appendChild(headerRow);
+
+      // Разбиваем на строки по 15 знаков, чтобы ничего не потерять
+      const chars = Array.from(raw);
+      const rows = Math.ceil(chars.length / 15);
+      for (let r = 0; r < rows; r++) {
+        const tr = document.createElement('tr');
+        const ln = document.createElement('td');
+        ln.className = 'line-num';
+        ln.textContent = (r + 1);
+        tr.appendChild(ln);
+
+        for (let c = 0; c < 15; c++) {
+          const td = document.createElement('td');
+          const idx = r * 15 + c;
+          if (idx < chars.length) {
+            const ch = chars[idx];
+            td.textContent = ch;
+            if (charData[ch]) {
+              const t = document.createElement('div');
+              t.className = 'char-tooltip';
+              t.innerHTML = `<strong>${ch}</strong> <em>${charData[ch].pinyin}</em><br>${charData[ch].meaning}<br><span class="lesson-badge">Урок ${charData[ch].lesson}</span>`;
+              td.appendChild(t);
+            }
+          }
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', createOracleTable);
+  </script>
 </body>
 </html>

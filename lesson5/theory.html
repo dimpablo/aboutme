@@ -82,6 +82,65 @@
       margin: 15px 0;
       font-size: 0.96em;
     }
+
+    /* Таблица орекулярного текста (сохранение авторского текста без потерь) */
+    .oracle-table {
+      border-collapse: collapse;
+      margin: 20px auto;
+      font-family: 'Noto Serif CJK SC', 'KaiTi', serif;
+      font-size: 1.2em;
+      table-layout: fixed;
+      width: 95%;
+      max-width: 1200px;
+    }
+    .oracle-table td {
+      padding: 6px 8px;
+      border: 1px solid #d4d4d4;
+      text-align: center;
+      min-width: 0;
+      width: calc(95% / 16);
+      position: relative;
+      word-break: keep-all;
+      white-space: nowrap;
+    }
+    .line-num, .col-num {
+      background-color: #f0f4f8;
+      color: #1a4f72;
+      font-weight: bold;
+      font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      font-size: 0.85em;
+      white-space: nowrap;
+    }
+    .lesson-badge {
+      display: inline-block;
+      background: #e6f2ff;
+      color: #1a4f72;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      margin-left: 5px;
+    }
+    .char-tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 300px;
+      background: #1a4f72;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.85em;
+      text-align: left;
+      white-space: normal;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(26, 79, 114, 0.3);
+      line-height: 1.5;
+      pointer-events: none;
+    }
+    td:hover .char-tooltip { display: block; }
   </style>
 </head>
 <body>
@@ -90,6 +149,10 @@
   <p>В этом уроке мы изучим предикативы, требующие двойного дополнения, и правила инверсии дополнений в архаическом древнекитайском языке.</p>
 
   <h2>ТЕКСТ УРОКА</h2>
+  <div class="text">
+    <h3>Текст урока (таблица с разметкой позиций)</h3>
+    <table class="oracle-table" id="oracleTable"></table>
+  </div>
   
   <div class="original">
     辛卯卜㱿貞帝其熯我貞帝不我熯戊申卜爭貞帝其降我熯貞帝不我降熯甲辰卜爭貞我伐馬方帝受我佑貞勿伐工方帝不我其受佑貞洹其作茲邑禍洹弗作茲邑禍貞帝其作王禍余受馬方佑乙亥卜㱿貞王曰侯虎余其得汝使余不其合以乃使甲辰卜王貞羌弗烖朕使其烖余不余烖
@@ -284,5 +347,85 @@
   <div class="note">
     <p><strong>Совет:</strong> Обратите особое внимание на порядок слов в предложениях с предикативами типа «давание — отнимание». Запомните правило: С — Дк — Дп.</p>
   </div>
+
+  <script>
+    // Набор данных об иероглифах с указанием урока (для подсказок).
+    const charData = {
+      // Базовые (уроки 1–3)
+      '不': { pinyin: 'bù', meaning: 'Отрицание «не»', lesson: 1 },
+      '勿': { pinyin: 'wù', meaning: 'Отрицание с модальным оттенком', lesson: 3 },
+      '弗': { pinyin: 'fú', meaning: 'Отрицание «не»', lesson: 2 },
+      '王': { pinyin: 'wáng', meaning: 'Правитель; ван', lesson: 1 },
+      '于': { pinyin: 'yú', meaning: 'Предлог: в, на, к', lesson: 3 },
+      '方': { pinyin: 'fāng', meaning: 'Племя; сторона', lesson: 2 },
+
+      // Урок 5
+      '辛': { pinyin: 'xīn', meaning: 'Небесный ствол (8-й)', lesson: 5 },
+      '卯': { pinyin: 'mǎo', meaning: 'Земная ветвь (4-я)', lesson: 5 },
+      '帝': { pinyin: 'dì', meaning: 'Небесный Владыка; титул правителя', lesson: 5 },
+      '熯': { pinyin: 'hàn', meaning: 'Иссушать; засуха', lesson: 5 },
+      '降': { pinyin: 'jiàng', meaning: 'Ниспосылать, посылать', lesson: 5 },
+      '伐': { pinyin: 'fá', meaning: 'Нападать, воевать', lesson: 5 },
+      '馬': { pinyin: 'mǎ', meaning: 'Лошадь; племя 馬方', lesson: 5 },
+      '佑': { pinyin: 'yòu', meaning: 'Помощь, поддержка', lesson: 5 },
+      '洹': { pinyin: 'huán', meaning: 'Река Хуань', lesson: 5 },
+      '作': { pinyin: 'zuò', meaning: 'Делать; причинять', lesson: 5 },
+      '禍': { pinyin: 'huò', meaning: 'Несчастье, бедствие', lesson: 5 },
+      '余': { pinyin: 'yú', meaning: 'Я (личное местоимение)', lesson: 5 },
+      '羌': { pinyin: 'qiāng', meaning: 'Племя Цян', lesson: 5 }
+    };
+
+    function createOracleTable() {
+      const table = document.getElementById('oracleTable');
+      if (!table) return;
+      const originalDiv = document.querySelector('.original');
+      if (!originalDiv) return;
+      const raw = (originalDiv.textContent || '')
+        .replace(/\s+/g, '')
+        .trim();
+      if (!raw) return;
+
+      const headerRow = document.createElement('tr');
+      const emptyCell = document.createElement('td');
+      emptyCell.className = 'line-num';
+      headerRow.appendChild(emptyCell);
+      for (let i = 1; i <= 15; i++) {
+        const th = document.createElement('td');
+        th.className = 'col-num';
+        th.textContent = i;
+        headerRow.appendChild(th);
+      }
+      table.appendChild(headerRow);
+
+      const chars = Array.from(raw);
+      const rows = Math.ceil(chars.length / 15);
+      for (let r = 0; r < rows; r++) {
+        const tr = document.createElement('tr');
+        const ln = document.createElement('td');
+        ln.className = 'line-num';
+        ln.textContent = (r + 1);
+        tr.appendChild(ln);
+
+        for (let c = 0; c < 15; c++) {
+          const td = document.createElement('td');
+          const idx = r * 15 + c;
+          if (idx < chars.length) {
+            const ch = chars[idx];
+            td.textContent = ch;
+            if (charData[ch]) {
+              const t = document.createElement('div');
+              t.className = 'char-tooltip';
+              t.innerHTML = `<strong>${ch}</strong> <em>${charData[ch].pinyin}</em><br>${charData[ch].meaning}<br><span class="lesson-badge">Урок ${charData[ch].lesson}</span>`;
+              td.appendChild(t);
+            }
+          }
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', createOracleTable);
+  </script>
 </body>
 </html>
