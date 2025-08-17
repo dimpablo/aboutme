@@ -20,6 +20,22 @@
       min-height: 100vh;
       color: #333;
       overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(25, 118, 210, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(156, 39, 176, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
     }
 
     /* Современный хедер */
@@ -32,6 +48,7 @@
       top: 0;
       z-index: 1000;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 0 0 20px 20px;
     }
 
     .topbar-content {
@@ -50,6 +67,7 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       text-shadow: 0 2px 10px rgba(25, 118, 210, 0.3);
+      filter: drop-shadow(0 2px 4px rgba(25, 118, 210, 0.3));
     }
 
     .userbox {
@@ -66,11 +84,49 @@
       font-weight: 600;
       box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      animation: pointsGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes pointsGlow {
+      from {
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+      }
+      to {
+        box-shadow: 0 4px 25px rgba(76, 175, 80, 0.6);
+      }
+    }
+
+    .points::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+      z-index: -1;
+      border-radius: 25px;
+    }
+
+    .points:hover::before {
+      left: 100%;
+      z-index: 1;
     }
 
     .points:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.05);
       box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+      background: linear-gradient(135deg, #45a049, #7cb342);
+      z-index: 2;
+      animation: none;
+      transform-origin: center;
+      text-align: center;
     }
 
     #contactBtn {
@@ -82,11 +138,49 @@
       font-weight: 600;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      animation: contactBtnGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes contactBtnGlow {
+      from {
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+      }
+      to {
+        box-shadow: 0 4px 25px rgba(255, 152, 0, 0.6);
+      }
+    }
+
+    #contactBtn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+      z-index: -1;
+      border-radius: 25px;
+    }
+
+    #contactBtn:hover::before {
+      left: 100%;
+      z-index: 1;
     }
 
     #contactBtn:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.05);
       box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+      background: linear-gradient(135deg, #f57c00, #ffa726);
+      z-index: 2;
+      animation: none;
+      transform-origin: center;
+      text-align: center;
     }
 
     .user-info {
@@ -97,10 +191,32 @@
       padding: 0.5rem;
       border-radius: 25px;
       transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 1;
+      animation: userInfoGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes userInfoGlow {
+      from {
+        box-shadow: 0 0 10px rgba(25, 118, 210, 0.3);
+      }
+      to {
+        box-shadow: 0 0 20px rgba(25, 118, 210, 0.6);
+      }
     }
 
     .user-info:hover {
-      background: rgba(25, 118, 210, 0.1);
+      background: rgba(25, 118, 210, 0.2);
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+      z-index: 2;
+      animation: none;
+      transform-origin: center;
+      text-align: center;
     }
 
     #user-photo {
@@ -110,11 +226,56 @@
       object-fit: cover;
       border: 3px solid #1976d2;
       box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+      transition: all 0.3s ease;
+      z-index: 1;
+      animation: userPhotoGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes userPhotoGlow {
+      from {
+        box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+      }
+      to {
+        box-shadow: 0 4px 25px rgba(25, 118, 210, 0.6);
+      }
+    }
+
+    #user-photo:hover {
+      transform: scale(1.1);
+      border-color: #42a5f5;
+      box-shadow: 0 6px 20px rgba(25, 118, 210, 0.5);
+      z-index: 2;
+      animation: none;
+      transform-origin: center;
+      text-align: center;
     }
 
     #user-name {
       color: #1976d2;
       font-weight: 600;
+      transition: color 0.3s ease;
+      position: relative;
+      z-index: 1;
+      animation: userNameGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes userNameGlow {
+      from {
+        text-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
+      }
+      to {
+        text-shadow: 0 0 10px rgba(25, 118, 210, 0.6);
+      }
+    }
+
+    .user-info:hover #user-name {
+      color: #42a5f5;
+      animation: none;
+      transform-origin: center;
     }
 
     /* Основной контент */
@@ -123,12 +284,75 @@
       margin: 0 auto;
       padding: 2rem;
       position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      margin-top: 2rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 1;
+      animation: mainContentGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+
+    @keyframes mainContentGlow {
+      from {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      }
+      to {
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+      }
     }
 
     .hero-section {
       text-align: center;
       margin-bottom: 4rem;
       color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 4rem 2rem;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 1;
+      animation: heroSectionGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+
+    @keyframes heroSectionGlow {
+      from {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+      to {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 20px;
+      animation: heroSectionBeforeGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+
+    @keyframes heroSectionBeforeGlow {
+      from {
+        opacity: 0.1;
+      }
+      to {
+        opacity: 0.2;
+      }
     }
 
     .hero-title {
@@ -140,6 +364,21 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
+      position: relative;
+      z-index: 1;
+      animation: glow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes glow {
+      from {
+        filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
+      }
+      to {
+        filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.6));
+      }
     }
 
     .hero-subtitle {
@@ -147,6 +386,23 @@
       opacity: 0.9;
       margin-bottom: 2rem;
       font-weight: 300;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 1s ease-out 0.5s both;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 0.9;
+        transform: translateY(0);
+      }
     }
 
     .start-learning-btn {
@@ -160,28 +416,114 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      animation: bounce 2s ease-in-out infinite;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    .start-learning-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+      z-index: -1;
+    }
+
+    .start-learning-btn:hover::before {
+      left: 100%;
+      z-index: 1;
     }
 
     .start-learning-btn:hover {
-      transform: translateY(-3px);
+      transform: translateY(-3px) scale(1.05);
       box-shadow: 0 12px 35px rgba(76, 175, 80, 0.5);
+      background: linear-gradient(135deg, #45a049, #7cb342);
+      z-index: 2;
+      animation: none;
+      transform-origin: center;
+      text-align: center;
     }
 
     /* Контейнер для уроков */
     .lessons-container {
       position: relative;
       min-height: 800px;
+      overflow: visible;
+      padding: 2rem 0;
+      background: linear-gradient(135deg, 
+        rgba(25, 118, 210, 0.02) 0%, 
+        rgba(76, 175, 80, 0.02) 50%, 
+        rgba(25, 118, 210, 0.02) 100%);
+      border-radius: 25px;
+      animation: fadeIn 1s ease-out 1s both;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
 
     /* Волнообразное расположение уроков */
     .lesson-unit {
       position: relative;
-      margin: 3rem 0;
-      transition: all 0.5s ease;
+      margin: 4rem 0;
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 25px;
+      padding: 1rem;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: slideInFromBottom 1s ease-out both;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes slideInFromBottom {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .lesson-unit:hover {
-      transform: scale(1.05);
+      transform: scale(1.02) translateY(-5px);
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border-color: rgba(25, 118, 210, 0.3);
+      animation: none;
+      transform-origin: center;
+      text-align: center;
     }
 
     .lesson-header {
@@ -193,6 +535,36 @@
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
       border: 1px solid rgba(255, 255, 255, 0.2);
       text-align: center;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      animation: slideInFromLeft 1s ease-out both;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes slideInFromLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .lesson-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(25, 118, 210, 0.1), transparent);
+      animation: shimmer 4s infinite;
+      z-index: -1;
+      border-radius: 20px;
     }
 
     .lesson-title {
@@ -200,11 +572,39 @@
       font-weight: 700;
       color: #1976d2;
       margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      z-index: 1;
+      animation: textGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes textGlow {
+      from {
+        filter: drop-shadow(0 2px 4px rgba(25, 118, 210, 0.3));
+      }
+      to {
+        filter: drop-shadow(0 2px 8px rgba(25, 118, 210, 0.6));
+      }
     }
 
     .lesson-description {
       color: #666;
       font-size: 1rem;
+      transition: color 0.3s ease;
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 1s ease-out both;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    .lesson-unit:hover .lesson-description {
+      color: #1976d2;
     }
 
     .lesson-cards {
@@ -212,6 +612,44 @@
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
       margin-top: 1.5rem;
+      position: relative;
+      z-index: 1;
+      animation: slideInFromRight 1s ease-out both;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes slideInFromRight {
+      from {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .lesson-cards::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background: linear-gradient(135deg, 
+        rgba(25, 118, 210, 0.05) 0%, 
+        rgba(76, 175, 80, 0.05) 50%, 
+        rgba(25, 118, 210, 0.05) 100%);
+      border-radius: 25px;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border: 1px solid rgba(25, 118, 210, 0.1);
+    }
+
+    .lesson-unit:hover .lesson-cards::before {
+      opacity: 1;
     }
 
     .lesson-card {
@@ -227,6 +665,22 @@
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
       position: relative;
       overflow: hidden;
+      background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.95) 0%, 
+        rgba(255, 255, 255, 0.9) 100%);
+      z-index: 1;
+      animation: cardFloat 3s ease-in-out infinite;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes cardFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
     }
 
     .lesson-card::before {
@@ -236,23 +690,52 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      background: linear-gradient(90deg, transparent, rgba(25, 118, 210, 0.2), transparent);
       transition: left 0.5s ease;
+      z-index: -1;
+      border-radius: 20px;
     }
 
     .lesson-card:hover::before {
       left: 100%;
+      z-index: 1;
     }
 
     .lesson-card:hover {
-      transform: translateY(-8px);
+      transform: translateY(-8px) scale(1.02);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 1) 0%, 
+        rgba(240, 248, 255, 0.95) 100%);
+      z-index: 2;
+      animation: none;
+      transform-origin: center;
+      text-align: center;
     }
 
     .card-icon {
       font-size: 3rem;
       margin-bottom: 1rem;
       display: block;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 4px rgba(25, 118, 210, 0.3));
+      position: relative;
+      z-index: 1;
+      animation: iconPulse 2s ease-in-out infinite;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
     }
 
     .card-title {
@@ -260,19 +743,49 @@
       font-weight: 600;
       color: #1976d2;
       margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      z-index: 1;
+      animation: titleGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes titleGlow {
+      from {
+        filter: drop-shadow(0 2px 4px rgba(25, 118, 210, 0.3));
+      }
+      to {
+        filter: drop-shadow(0 2px 8px rgba(25, 118, 210, 0.6));
+      }
     }
 
     .card-description {
       color: #666;
       font-size: 0.9rem;
       line-height: 1.4;
+      transition: color 0.3s ease;
+      position: relative;
+      z-index: 1;
+      animation: fadeIn 1s ease-out both;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    .lesson-card:hover .card-description {
+      color: #1976d2;
     }
 
     /* Анимация появления */
     .lesson-unit {
       opacity: 0;
       transform: translateY(50px);
-      animation: slideInUp 0.8s ease forwards;
+      animation: slideInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      position: relative;
+      z-index: 1;
     }
 
     .lesson-unit:nth-child(1) { animation-delay: 0.1s; }
@@ -282,9 +795,17 @@
     .lesson-unit:nth-child(5) { animation-delay: 0.5s; }
 
     @keyframes slideInUp {
-      to {
+      0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+      }
+      50% {
+        opacity: 0.7;
+        transform: translateY(25px) scale(0.95);
+      }
+      100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
 
@@ -325,26 +846,32 @@
 
     .particle {
       position: absolute;
-      width: 4px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.6);
+      width: 6px;
+      height: 6px;
+      background: linear-gradient(45deg, rgba(25, 118, 210, 0.8), rgba(76, 175, 80, 0.8));
       border-radius: 50%;
       animation: float 6s infinite linear;
+      box-shadow: 0 0 10px rgba(25, 118, 210, 0.5);
     }
 
     @keyframes float {
       0% {
-        transform: translateY(100vh) rotate(0deg);
+        transform: translateY(100vh) rotate(0deg) scale(0.5);
         opacity: 0;
       }
       10% {
         opacity: 1;
+        transform: translateY(90vh) rotate(36deg) scale(1);
+      }
+      50% {
+        transform: translateY(50vh) rotate(180deg) scale(1.2);
       }
       90% {
         opacity: 1;
+        transform: translateY(10vh) rotate(324deg) scale(1);
       }
       100% {
-        transform: translateY(-100px) rotate(360deg);
+        transform: translateY(-100px) rotate(360deg) scale(0.5);
         opacity: 0;
       }
     }
@@ -358,6 +885,37 @@
       margin: 2rem 0;
       text-align: center;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      animation: slideInFromTop 1s ease-out both;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes slideInFromTop {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .progress-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: shimmer 3s infinite;
+      z-index: -1;
+      border-radius: 20px;
     }
 
     .progress-title {
@@ -365,6 +923,24 @@
       font-weight: 700;
       color: #1976d2;
       margin-bottom: 1rem;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      z-index: 1;
+      animation: progressTitleGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes progressTitleGlow {
+      from {
+        filter: drop-shadow(0 2px 4px rgba(25, 118, 210, 0.3));
+      }
+      to {
+        filter: drop-shadow(0 2px 8px rgba(25, 118, 210, 0.6));
+      }
     }
 
     .progress-bar-container {
@@ -374,6 +950,20 @@
       border-radius: 10px;
       overflow: hidden;
       margin: 1rem 0;
+      position: relative;
+      z-index: 1;
+      animation: progressBarGlow 2s ease-in-out infinite alternate;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes progressBarGlow {
+      from {
+        box-shadow: 0 0 10px rgba(25, 118, 210, 0.3);
+      }
+      to {
+        box-shadow: 0 0 20px rgba(25, 118, 210, 0.6);
+      }
     }
 
     .progress-bar {
@@ -382,6 +972,20 @@
       border-radius: 10px;
       transition: width 1s ease;
       position: relative;
+      box-shadow: 0 2px 10px rgba(76, 175, 80, 0.5);
+      z-index: 1;
+      animation: progressBarPulse 2s ease-in-out infinite;
+      transform-origin: center;
+      text-align: center;
+    }
+
+    @keyframes progressBarPulse {
+      0%, 100% {
+        box-shadow: 0 2px 10px rgba(76, 175, 80, 0.5);
+      }
+      50% {
+        box-shadow: 0 2px 20px rgba(76, 175, 80, 0.8);
+      }
     }
 
     .progress-bar::after {
@@ -393,6 +997,8 @@
       bottom: 0;
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
       animation: shimmer 2s infinite;
+      z-index: 1;
+      border-radius: 10px;
     }
 
     @keyframes shimmer {
@@ -628,29 +1234,53 @@
     // Создание плавающих частиц
     function createParticles() {
       const particlesContainer = document.getElementById('particles');
-      const particleCount = 20;
+      const particleCount = 30; // Увеличиваем количество частиц
 
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 6 + 's';
-        particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        particle.style.opacity = Math.random() * 0.8 + 0.2; // Разная прозрачность
         particlesContainer.appendChild(particle);
       }
     }
 
-    // 🌊 Волнообразное расположение юнитов (сохранено!)
+    // 🌊 Волнообразное расположение юнитов (восстановлено!)
     function applyWaveEffect() {
       const units = document.querySelectorAll('.lesson-unit');
-      const amplitude = 150;    // амплитуда движения
-      const frequency = 0.008;  // частота волны
-
+      const container = document.getElementById('lessons-container');
+      if (!container) return;
+      
+      const containerRect = container.getBoundingClientRect();
+      const containerTop = containerRect.top + window.scrollY;
+      const containerHeight = containerRect.height;
+      
       units.forEach((unit, index) => {
-        const rect = unit.getBoundingClientRect();
-        const y = rect.top + window.scrollY + rect.height / 2;
-        const x = amplitude * Math.sin(frequency * y + index * 0.5);
-        unit.style.transform = `translateX(${x}px)`;
+        // Создаем синусоидальную волну
+        const unitRect = unit.getBoundingClientRect();
+        const unitTop = unitRect.top + window.scrollY;
+        
+        // Вычисляем позицию относительно контейнера уроков
+        const relativePosition = (unitTop - containerTop) / containerHeight;
+        
+        // Создаем волну с разными параметрами для каждого юнита
+        const amplitude = 120 + (index * 10); // Увеличиваем амплитуду для каждого следующего юнита
+        const frequency = 2 * Math.PI; // Полный цикл
+        const phase = index * (Math.PI / 3); // Сдвиг фазы для каждого юнита
+        
+        // Вычисляем смещение по X
+        const waveX = amplitude * Math.sin(frequency * relativePosition + phase);
+        
+        // Добавляем небольшое смещение по Y для более естественного вида
+        const waveY = 20 * Math.sin(frequency * relativePosition * 2 + phase);
+        
+        // Применяем трансформацию
+        unit.style.transform = `translate(${waveX}px, ${waveY}px)`;
+        
+        // Добавляем плавную анимацию
+        unit.style.transition = 'transform 0.6s ease-out';
       });
     }
 
