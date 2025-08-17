@@ -1,0 +1,16 @@
+{
+  "name": "Урок 5 — Предикативы с двойным дополнением и инверсия",
+  "short_name": "Урок 5",
+  "description": "Изучение предикативов с двойным дополнением и правил инверсии в архаическом древнекитайском языке",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#1976d2",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI0OCIgeT0iNDgiPgo8cGF0aCBkPSJNNDggMjRDMzUuODQ5NyAyNCAyNiAzMy44NDk3IDI2IDQ2QzI2IDU4LjE1MDMgMzUuODQ5NyA2OCA0OCA2OEM2MC4xNTAzIDY4IDcwIDU4LjE1MDMgNzAgNDZDNzAgMzMuODQ5NyA2MC4xNTAzIDI0IDQ4IDI0WiIgZmlsbD0id2hpdGUiLz4KPHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI3MiIgeT0iNzIiPgo8cGF0aCBkPSJNMzYgMzZIMTJWMjRIMzZWMzZaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+Cjwvc3ZnPgo=",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
