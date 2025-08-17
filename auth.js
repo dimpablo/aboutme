@@ -15,10 +15,20 @@ const firebaseConfig = {
   measurementId: 'G-W4ZQXWRTKK'
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+// Проверяем, не инициализирован ли уже Firebase
+let app, auth, db, provider;
+
+try {
+  // Пытаемся получить существующий экземпляр
+  app = getApp();
+} catch (e) {
+  // Если не существует, создаем новый
+  app = initializeApp(firebaseConfig);
+}
+
+auth = getAuth(app);
+db = getFirestore(app);
+provider = new GoogleAuthProvider();
 
 const LS_KEY = 'dk_points';
 let cachedPoints = Number(localStorage.getItem(LS_KEY) || '0') | 0;
@@ -105,9 +115,30 @@ onAuthStateChanged(auth, async (user) => {
   notify();
 });
 
-window.PointsAPI = { get user() { return currentUser; }, get: () => cachedPoints, set: setPoints, inc: incPoints, subscribe, login, logout };
+// Создаем объект PointsAPI
+const PointsAPI = { 
+  get user() { return currentUser; }, 
+  get: () => cachedPoints, 
+  set: setPoints, 
+  inc: incPoints, 
+  subscribe, 
+  login, 
+  logout 
+};
+
+// Делаем доступным глобально
+window.PointsAPI = PointsAPI;
+
+// Экспорт для использования в других модулях
+export { PointsAPI };
 
 (function wireTopbar(){
+  // Ждем, пока PointsAPI станет доступным
+  if (!window.PointsAPI) {
+    setTimeout(wireTopbar, 100);
+    return;
+  }
+  
   const pt = document.getElementById('points');
   const av = document.getElementById('avatar');
   const loginBtn = document.getElementById('loginBtn');
