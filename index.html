@@ -2,318 +2,604 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Дедовская верстка + Центрированные лэйблы</title>
-    <!-- Скрипт автоматического увеличения масштаба -->
-  <script>
-    document.body.style.zoom = "140%";
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1976d2" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>OldCN — Древнекитайский язык</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      background-color: #f8f9fa;
-      font-family: Verdana, sans-serif;
+      box-sizing: border-box;
     }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    /* Современный хедер */
     .topbar {
-      display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #1976d2; color: #fff; position: sticky; top: 0; z-index: 100;
-    }
-    .brand { font-weight: bold; }
-    .userbox { display: flex; align-items: center; gap: 10px; }
-    .points { background: rgba(255,255,255,.2); padding: 4px 8px; border-radius: 999px; font-weight: bold; }
-    .avatar { width: 32px; height: 32px; border-radius: 50%; background: #fff; overflow: hidden; }
-    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    #contactBtn { background:#fff; color:#1976d2; border:none; padding:6px 10px; border-radius:8px; font-weight:bold; cursor:pointer; text-decoration:none; display:inline-block; transition:all 0.3s ease; }
-    #contactBtn:hover { background:#f0f0f0; transform:translateY(-1px); box-shadow:0 2px 4px rgba(0,0,0,0.1); }
-
-    /* Стили для информации о пользователе */
-    .user-info { 
-      display: flex; 
-      align-items: center; 
-      gap: 8px; 
-    }
-    
-    .user-info img { 
-      width: 32px; 
-      height: 32px; 
-      border-radius: 50%; 
-      object-fit: cover; 
-      border: 2px solid rgba(255,255,255,0.3);
-    }
-    
-    .user-info span { 
-      color: white; 
-      font-size: 14px; 
-      font-weight: 500;
-      max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
-    /* КРУЖОК 150x150 */
-    .unit-circle {
-      display: block;
-      width: 150px;
-      height: 150px;
-      background-color: #00838f;
-      color: white;
-      text-align: center;
-      line-height: 150px;
-      border-radius: 50%;
-      font-weight: bold;
-      font-size: 16px;
+    .topbar-content {
+      max-width: 1200px;
       margin: 0 auto;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-      position: relative;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* Цвета для первых трёх */
-    .unit-theory   { background-color: #d32f2f; }
-    .unit-kanji    { background-color: #311b92; }
-    .unit-exercise { background-color: #ef6c00; }
+    .brand {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 10px rgba(25, 118, 210, 0.3);
+    }
 
-    /* Ячейка для кружков — высокая */
-    .unit-row {
-      height: 180px;
-      background-color: #ffffff;
-      border-bottom: hidden;
+    .userbox {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .points {
+      background: linear-gradient(135deg, #4CAF50, #8BC34A);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .points:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    #contactBtn {
+      background: linear-gradient(135deg, #FF9800, #FFB74D);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    #contactBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .user-info:hover {
+      background: rgba(25, 118, 210, 0.1);
+    }
+
+    #user-photo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #1976d2;
+      box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+    }
+
+    #user-name {
+      color: #1976d2;
+      font-weight: 600;
+    }
+
+    /* Основной контент */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
       position: relative;
-      overflow: hidden;
+    }
+
+    .hero-section {
+      text-align: center;
+      margin-bottom: 4rem;
+      color: white;
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #ffffff, #e3f2fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+
+    .start-learning-btn {
+      background: linear-gradient(135deg, #4CAF50, #8BC34A);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .start-learning-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(76, 175, 80, 0.5);
+    }
+
+    /* Контейнер для уроков */
+    .lessons-container {
+      position: relative;
+      min-height: 800px;
+    }
+
+    /* Волнообразное расположение уроков */
+    .lesson-unit {
+      position: relative;
+      margin: 3rem 0;
+      transition: all 0.5s ease;
+    }
+
+    .lesson-unit:hover {
+      transform: scale(1.05);
+    }
+
+    .lesson-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       text-align: center;
     }
 
-    /* Ячейка для текстов — вдвое короче и с радостным цветом */
-    .label-row {
-      height: 30px;
-      border-bottom: hidden;
-      position: relative;
-      overflow: hidden;
-      text-align: center;
+    .lesson-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1976d2;
+      margin-bottom: 0.5rem;
     }
 
-    /* Разные радостные цвета для строк с текстами */
-    .label-row:nth-child(1)  { background-color: #fff3e0; } /* светло-оранжевый */
-    .label-row:nth-child(2)  { background-color: #f3e5f5; } /* светло-фиолетовый */
-    .label-row:nth-child(4)  { background-color: #ffe0b2; } /* светло-коричневый / персик */
+    .lesson-description {
+      color: #666;
+      font-size: 1rem;
+    }
 
-    /* Прямоугольник на всю ячейку */
-    .unit-label {
-      display: block;
+    .lesson-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .lesson-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
       width: 100%;
       height: 100%;
-      color: #000;
-      text-align: center;
-      line-height: 20px; /* совпадает с высотой .label-row */
-      font-weight: bold;
-      font-size: 18px;
-      background-color: transparent; /* фон задаётся в .label-row */
-      border-radius: 0;
-      z-index: 1;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.5s ease;
     }
 
-    /* Таблица — без границ */
-    table {
+    .lesson-card:hover::before {
+      left: 100%;
+    }
+
+    .lesson-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1976d2;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-description {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    /* Анимация появления */
+    .lesson-unit {
+      opacity: 0;
+      transform: translateY(50px);
+      animation: slideInUp 0.8s ease forwards;
+    }
+
+    .lesson-unit:nth-child(1) { animation-delay: 0.1s; }
+    .lesson-unit:nth-child(2) { animation-delay: 0.2s; }
+    .lesson-unit:nth-child(3) { animation-delay: 0.3s; }
+    .lesson-unit:nth-child(4) { animation-delay: 0.4s; }
+    .lesson-unit:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes slideInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      .topbar {
+        padding: 1rem;
+      }
+
+      .topbar-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .main-content {
+        padding: 1rem;
+      }
+
+      .lesson-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Дополнительные эффекты */
+    .floating-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      border-collapse: collapse;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: float 6s infinite linear;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Прогресс-бар */
+    .progress-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .progress-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1976d2;
+      margin-bottom: 1rem;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 20px;
+      background: rgba(25, 118, 210, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #4CAF50, #8BC34A);
+      border-radius: 10px;
+      transition: width 1s ease;
+      position: relative;
+    }
+
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
   </style>
   <script type="module" src="./auth.js"></script>
 </head>
 <body>
+  <!-- Современный хедер -->
   <div class="topbar">
-    <div class="brand">Древнекитайский</div>
-    <div class="userbox">
-      <div class="points" id="points">0 баллов</div>
-      <a href="https://t.me/oldcnio" target="_blank" id="contactBtn">Связаться с разработчиком</a>
-      <div class="avatar" id="avatar" style="display:none">
-        <img src="https://ui-avatars.com/api/?name=G&background=1976d2&color=fff" alt="user" />
-      </div>
-      <div class="user-info" id="user-info" style="display:none">
-        <img id="user-photo" src="" alt="User photo" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-        <span id="user-name" style="color: white; margin-left: 8px; font-size: 14px;"></span>
+    <div class="topbar-content">
+      <div class="brand">OldCN</div>
+      <div class="userbox">
+        <div class="points" id="points">0 баллов</div>
+        <a href="https://t.me/oldcnio" target="_blank" id="contactBtn">Связаться с разработчиком</a>
+        <div class="user-info" id="user-info" style="display:none">
+          <img id="user-photo" src="" alt="User photo">
+          <span id="user-name"></span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Основная таблица -->
-  <table cellpadding="0" cellspacing="0">
-    <!-- Строка: Урок 1 -->
-    <tr>
-      <td class="label-row">
-        <div class="unit-label">Урок 1. Гадание о дожде.</div>
-      </td>
-    </tr>
+  <!-- Основной контент -->
+  <div class="main-content">
+    <!-- Героическая секция -->
+    <div class="hero-section">
+      <h1 class="hero-title">Древнекитайский язык</h1>
+      <p class="hero-subtitle">Изучайте архаический древнекитайский язык с помощью современных технологий</p>
+      <button class="start-learning-btn" onclick="scrollToLessons()">Начать изучение</button>
+    </div>
 
-    <!-- Кружки -->
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson1/theory.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-theory">📚 Теория</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson1/hanzi.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-kanji">🪶 Иероглифы</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson1/index.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-exercise">📝 Задания</div>
-        </a>
-      </td>
-    </tr>
+    <!-- Секция прогресса -->
+    <div class="progress-section" id="progress-section" style="display:none">
+      <h2 class="progress-title">Ваш прогресс</h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+      </div>
+      <p>Продолжайте изучение для достижения новых высот!</p>
+    </div>
 
-    <!-- Строка: Урок 2 -->
-    <tr>
-      <td class="label-row">
-        <div class="unit-label">Урок 2. Прямое дополнение и определение.</div>
-      </td>
-    </tr>
+    <!-- Контейнер для уроков -->
+    <div class="lessons-container" id="lessons-container">
+      <!-- Урок 1 -->
+      <div class="lesson-unit" style="transform: translateX(0px);">
+        <div class="lesson-header">
+          <h2 class="lesson-title">Урок 1. Гадание о дожде</h2>
+          <p class="lesson-description">Основы архаического древнекитайского языка</p>
+        </div>
+        <div class="lesson-cards">
+          <a href="./lesson1/theory.html" class="lesson-card">
+            <span class="card-icon">📚</span>
+            <h3 class="card-title">Теория</h3>
+            <p class="card-description">Изучите теоретические основы и грамматику</p>
+          </a>
+          <a href="./lesson1/hanzi.html" class="lesson-card">
+            <span class="card-icon">🪶</span>
+            <h3 class="card-title">Иероглифы</h3>
+            <p class="card-description">Практикуйте написание иероглифов</p>
+          </a>
+          <a href="./lesson1/index.html" class="lesson-card">
+            <span class="card-icon">📝</span>
+            <h3 class="card-title">Задания</h3>
+            <p class="card-description">Выполните практические упражнения</p>
+          </a>
+        </div>
+      </div>
 
-    <!-- Остальные кружки -->
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson2/theory.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-theory">📚 Теория</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson2/hanzi.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-kanji">🪶 Иероглифы</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson2/index.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-exercise">📝 Задания</div>
-        </a>
-      </td>
-    </tr>
+      <!-- Урок 2 -->
+      <div class="lesson-unit" style="transform: translateX(0px);">
+        <div class="lesson-header">
+          <h2 class="lesson-title">Урок 2. Прямое дополнение и определение</h2>
+          <p class="lesson-description">Углубленное изучение грамматических конструкций</p>
+        </div>
+        <div class="lesson-cards">
+          <a href="./lesson2/theory.html" class="lesson-card">
+            <span class="card-icon">📚</span>
+            <h3 class="card-title">Теория</h3>
+            <p class="card-description">Изучите теоретические основы и грамматику</p>
+          </a>
+          <a href="./lesson2/hanzi.html" class="lesson-card">
+            <span class="card-icon">🪶</span>
+            <h3 class="card-title">Иероглифы</h3>
+            <p class="card-description">Практикуйте написание иероглифов</p>
+          </a>
+          <a href="./lesson2/index.html" class="lesson-card">
+            <span class="card-icon">📝</span>
+            <h3 class="card-title">Задания</h3>
+            <p class="card-description">Выполните практические упражнения</p>
+          </a>
+        </div>
+      </div>
 
-    <!-- Строка: Урок 3 -->
-    <tr>
-      <td class="label-row">
-        <div class="unit-label">Урок 3. Предлог 于 и косвенные дополнения.</div>
-      </td>
-    </tr>
+      <!-- Урок 3 -->
+      <div class="lesson-unit" style="transform: translateX(0px);">
+        <div class="lesson-header">
+          <h2 class="lesson-title">Урок 3. Предлог 于 и косвенные дополнения</h2>
+          <p class="lesson-description">Изучение предлогов и дополнений</p>
+        </div>
+        <div class="lesson-cards">
+          <a href="./lesson3/theory.html" class="lesson-card">
+            <span class="card-icon">📚</span>
+            <h3 class="card-title">Теория</h3>
+            <p class="card-description">Изучите теоретические основы и грамматику</p>
+          </a>
+          <a href="./lesson3/hanzi.html" class="lesson-card">
+            <span class="card-icon">🪶</span>
+            <h3 class="card-title">Иероглифы</h3>
+            <p class="card-description">Практикуйте написание иероглифов</p>
+          </a>
+          <a href="./lesson3/index.html" class="lesson-card">
+            <span class="card-icon">📝</span>
+            <h3 class="card-title">Задания</h3>
+            <p class="card-description">Выполните практические упражнения</p>
+          </a>
+        </div>
+      </div>
 
-    <!-- Кружки для урока 3 -->
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson3/theory.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-theory">📚 Теория</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson3/hanzi.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-kanji">🪶 Иероглифы</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson3/index.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-exercise">📝 Задания</div>
-        </a>
-      </td>
-    </tr>
+      <!-- Урок 4 -->
+      <div class="lesson-unit" style="transform: translateX(0px);">
+        <div class="lesson-header">
+          <h2 class="lesson-title">Урок 4. Предлог 自 и конструкция 自...至于</h2>
+          <p class="lesson-description">Временные и пространственные рамки</p>
+        </div>
+        <div class="lesson-cards">
+          <a href="./lesson4/theory.html" class="lesson-card">
+            <span class="card-icon">📚</span>
+            <h3 class="card-title">Теория</h3>
+            <p class="card-description">Изучите теоретические основы и грамматику</p>
+          </a>
+          <a href="./lesson4/hanzi.html" class="lesson-card">
+            <span class="card-icon">🪶</span>
+            <h3 class="card-title">Иероглифы</h3>
+            <p class="card-description">Практикуйте написание иероглифов</p>
+          </a>
+          <a href="./lesson4/index.html" class="lesson-card">
+            <span class="card-icon">📝</span>
+            <h3 class="card-title">Задания</h3>
+            <p class="card-description">Выполните практические упражнения</p>
+          </a>
+        </div>
+      </div>
 
-    <!-- Строка: Урок 4 -->
-    <tr>
-      <td class="label-row">
-        <div class="unit-label">Урок 4. Предлог 自 и конструкция 自...至于.</div>
-      </td>
-    </tr>
+      <!-- Урок 5 -->
+      <div class="lesson-unit" style="transform: translateX(0px);">
+        <div class="lesson-header">
+          <h2 class="lesson-title">Урок 5. Предикативы с двойным дополнением и инверсия</h2>
+          <p class="lesson-description">Сложные грамматические конструкции</p>
+        </div>
+        <div class="lesson-cards">
+          <a href="./lesson5/theory.html" class="lesson-card">
+            <span class="card-icon">📚</span>
+            <h3 class="card-title">Теория</h3>
+            <p class="card-description">Изучите теоретические основы и грамматику</p>
+          </a>
+          <a href="./lesson5/hanzi.html" class="lesson-card">
+            <span class="card-icon">🪶</span>
+            <h3 class="card-title">Иероглифы</h3>
+            <p class="card-description">Практикуйте написание иероглифов</p>
+          </a>
+          <a href="./lesson5/index.html" class="lesson-card">
+            <span class="card-icon">📝</span>
+            <h3 class="card-title">Задания</h3>
+            <p class="card-description">Выполните практические упражнения</p>
+          </a>
+        </div>
+      </div>
+    </div>
 
-    <!-- Кружки для урока 4 -->
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson4/theory.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-theory">📚 Теория</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson4/hanzi.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-kanji">🪶 Иероглифы</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson4/index.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-exercise">📝 Задания</div>
-        </a>
-      </td>
-    </tr>
+    <!-- Плавающие частицы -->
+    <div class="floating-particles" id="particles"></div>
+  </div>
 
-    <!-- Строка: Урок 5 -->
-    <tr>
-      <td class="label-row">
-        <div class="unit-label">Урок 5. Предикативы с двойным дополнением и инверсия.</div>
-      </td>
-    </tr>
-
-    <!-- Кружки для урока 5 -->
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson5/theory.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-theory">📚 Теория</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson5/hanzi.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-kanji">🪶 Иероглифы</div>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td class="unit-row">
-        <a href="./lesson5/index.html" style="display: block; text-decoration: none;">
-          <div class="unit-circle unit-exercise">📝 Задания</div>
-        </a>
-      </td>
-    </tr>
-  </table>
-
-  <!-- Скрипт анимации и очков -->
   <script>
-    // Временное локальное хранилище очков; dashboard подключим позже
-    const PKEY = 'dk_points';
-    function getPoints(){ return Number(localStorage.getItem(PKEY) || '0')|0; }
-    function setPoints(v){ localStorage.setItem(PKEY, String(v)); document.getElementById('points').textContent = v + ' баллов'; }
-    setPoints(getPoints());
+    // Ждем загрузки PointsAPI
+    function waitForPointsAPI() {
+      if (window.PointsAPI) {
+        initApp();
+      } else {
+        setTimeout(waitForPointsAPI, 100);
+      }
+    }
+    
+    function initApp() {
+      // Инициализация системы очков
+      const PKEY = 'dk_points';
+      function getPoints(){ return Number(localStorage.getItem(PKEY) || '0')|0; }
+      function setPoints(v){ localStorage.setItem(PKEY, String(v)); document.getElementById('points').textContent = v + ' баллов'; }
+      setPoints(getPoints());
 
-    // 🌊 Просторная синусоида
-    const amplitude = 200;    // амплитуда движения
-    const frequency = 0.006;  // частота волны
+      // Подписка на изменения пользователя
+      window.PointsAPI.subscribe((user) => {
+        if (user) {
+          console.log('Пользователь вошел:', user.displayName);
+          // Показываем секцию прогресса
+          document.getElementById('progress-section').style.display = 'block';
+          // Обновляем прогресс-бар
+          updateProgressBar();
+        } else {
+          console.log('Пользователь вышел');
+          document.getElementById('progress-section').style.display = 'none';
+        }
+      });
 
-    const units = document.querySelectorAll('.unit-circle');
-
-    units.forEach(unit => {
-      const rect = unit.getBoundingClientRect();
-      const y = rect.top + window.scrollY + rect.height / 2;
-
-      const x = amplitude * Math.sin(frequency * y);
-      unit.style.transform = `translateX(${x}px)`;
-    });
-
-    // Обработка клика по аватарке для выхода
-    document.addEventListener('DOMContentLoaded', function() {
+      // Обработка клика по аватарке для выхода
       const userInfo = document.getElementById('user-info');
       if (userInfo) {
         userInfo.addEventListener('click', function() {
@@ -324,8 +610,63 @@
           }
         });
       }
+    }
+
+    // Функция прокрутки к урокам
+    function scrollToLessons() {
+      document.getElementById('lessons-container').scrollIntoView({ 
+        behavior: 'smooth' 
+      });
+    }
+
+    // Обновление прогресс-бара
+    function updateProgressBar() {
+      const progress = Math.min(100, Math.random() * 100); // Заглушка для демонстрации
+      document.getElementById('progress-bar').style.width = progress + '%';
+    }
+
+    // Создание плавающих частиц
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 20;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // 🌊 Волнообразное расположение юнитов (сохранено!)
+    function applyWaveEffect() {
+      const units = document.querySelectorAll('.lesson-unit');
+      const amplitude = 150;    // амплитуда движения
+      const frequency = 0.008;  // частота волны
+
+      units.forEach((unit, index) => {
+        const rect = unit.getBoundingClientRect();
+        const y = rect.top + window.scrollY + rect.height / 2;
+        const x = amplitude * Math.sin(frequency * y + index * 0.5);
+        unit.style.transform = `translateX(${x}px)`;
+      });
+    }
+
+    // Применяем волновой эффект при прокрутке
+    window.addEventListener('scroll', applyWaveEffect);
+    window.addEventListener('resize', applyWaveEffect);
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', function() {
+      createParticles();
+      applyWaveEffect();
+      waitForPointsAPI();
     });
+
+    // Периодическое обновление волнового эффекта
+    setInterval(applyWaveEffect, 100);
   </script>
-  
 </body>
 </html>
