@@ -22,7 +22,8 @@
     .points { background: rgba(255,255,255,.2); padding: 4px 8px; border-radius: 999px; font-weight: bold; }
     .avatar { width: 32px; height: 32px; border-radius: 50%; background: #fff; overflow: hidden; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    #loginBtn { background:#fff; color:#1976d2; border:none; padding:6px 10px; border-radius:8px; font-weight:bold; cursor:pointer; }
+    #contactBtn { background:#fff; color:#1976d2; border:none; padding:6px 10px; border-radius:8px; font-weight:bold; cursor:pointer; text-decoration:none; display:inline-block; transition:all 0.3s ease; }
+    #contactBtn:hover { background:#f0f0f0; transform:translateY(-1px); box-shadow:0 2px 4px rgba(0,0,0,0.1); }
 
     /* Стили для информации о пользователе */
     .user-info { 
@@ -125,7 +126,7 @@
     <div class="brand">Древнекитайский</div>
     <div class="userbox">
       <div class="points" id="points">0 баллов</div>
-      <button id="loginBtn">Войти</button>
+      <a href="https://t.me/oldcnio" target="_blank" id="contactBtn">Связаться с разработчиком</a>
       <div class="avatar" id="avatar" style="display:none">
         <img src="https://ui-avatars.com/api/?name=G&background=1976d2&color=fff" alt="user" />
       </div>
