@@ -7,7 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <title>Урок 1 — Практика</title>
+  <title>Урок 3 — Практика</title>
   <style>
     html, body {
       width: 100%;
@@ -103,7 +103,7 @@
 </head>
 <body>
   <div class="header">
-    <div id="status">⏳ Загружаем задания урока 1…</div>
+    <div id="status">⏳ Загружаем задания урока 3…</div>
     <div id="counter"></div>
   </div>
   <div id="progress-container"><div id="progress-bar"></div></div>
@@ -131,7 +131,7 @@
         const response = await fetch('./tasks.json');
         const data = await response.json();
         tasks = data.tasks;
-        statusEl.textContent = `Урок 1: ${data.title}`;
+        statusEl.textContent = `Урок 3: ${data.title}`;
         updateProgress();
         showTask(0);
       } catch (error) {
@@ -226,7 +226,7 @@
     }
 
     function generateMultiGroupSingleHtml(task) {
-      let html = '<div class="section-title">Переведите словосочетания:</div>';
+      let html = '<div class="section-title">Определи грамматическую функцию:</div>';
       task.groups.forEach((group, groupIndex) => {
         html += `
           <div class="pair">
@@ -253,7 +253,7 @@
     }
 
     function generateMatchPairsHtml(task) {
-      let html = '<div class="section-title">Соедините иероглифы с их значениями:</div>';
+      let html = '<div class="section-title">Соедините грамматические конструкции с их значениями:</div>';
       html += '<div class="options">';
       task.pairs.forEach((pair, index) => {
         html += `<div class="pair">
@@ -270,7 +270,7 @@
     }
 
     function generateFillBlanksHtml(task) {
-      let html = '<div class="section-title">Заполните пропуски:</div>';
+      let html = '<div class="section-title">Заполните пропуски в грамматических конструкциях:</div>';
       html += '<div class="options">';
       task.blanks.forEach((blank, index) => {
         html += `<div class="pair">

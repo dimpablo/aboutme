@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Урок 3 — Теория</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #1976d2;
+      border-bottom: 2px solid #e3f2fd;
+      padding-bottom: 10px;
+    }
+    .char-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .char-item {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 15px;
+      transition: all 0.3s ease;
+    }
+    .char-item:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .char-item > span {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1976d2;
+    }
+    .inline-pinyin {
+      font-size: 14px;
+      color: #666;
+      margin-left: 8px;
+    }
+    .char-tooltip {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.4;
+    }
+    .example {
+      background: #e3f2fd;
+      border-left: 4px solid #1976d2;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .note {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Урок 3 — Новые грамматические конструкции</h1>
+  
+  <p>В этом уроке мы изучим новые грамматические конструкции древнекитайского языка, которые позволят нам понимать более сложные тексты.</p>
+
+  <h2>Основные темы урока</h2>
+  <ul>
+    <li>Сложные предложения</li>
+    <li>Придаточные предложения</li>
+    <li>Новые служебные слова</li>
+    <li>Расширенная лексика</li>
+  </ul>
+
+  <h2>СЛОВАРЬ УРОКА 3</h2>
+  
+  <div class="char-list">
+    <div class="char-item">
+      <span>而<span class="inline-pinyin">ér</span></span>
+      <div class="char-tooltip">
+        Союз, соединяющий части предложения; может означать "и", "но", "а также"
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>之<span class="inline-pinyin">zhī</span></span>
+      <div class="char-tooltip">
+        Показатель принадлежности; "его", "её", "их"; также может быть указательным местоимением
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>者<span class="inline-pinyin">zhě</span></span>
+      <div class="char-tooltip">
+        Суффикс, образующий существительные от глаголов; "тот, кто...", "то, что..."
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>所<span class="inline-pinyin">suǒ</span></span>
+      <div class="char-tooltip">
+        Показатель пассивного залога; "то, что было сделано", "то, что происходит"
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>以<span class="inline-pinyin">yǐ</span></span>
+      <div class="char-tooltip">
+        Предлог "с помощью", "посредством"; также может означать "чтобы", "для того чтобы"
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>於<span class="inline-pinyin">yú</span></span>
+      <div class="char-tooltip">
+        Предлог места и времени; "в", "на", "у", "около", "при"
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>為<span class="inline-pinyin">wéi</span></span>
+      <div class="char-tooltip">
+        Глагол "быть", "становиться"; предлог "для", "ради"; "потому что"
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>則<span class="inline-pinyin">zé</span></span>
+      <div class="char-tooltip">
+        Союз "тогда", "следовательно", "если... то..."; логическое следствие
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>若<span class="inline-pinyin">ruò</span></span>
+      <div class="char-tooltip">
+        Союз "если", "если бы"; условное предложение
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>雖<span class="inline-pinyin">suī</span></span>
+      <div class="char-tooltip">
+        Союз "хотя", "несмотря на то что"; уступительное предложение
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>然<span class="inline-pinyin">rán</span></span>
+      <div class="char-tooltip">
+        Суффикс "-образный", "-подобный"; также может означать "однако", "но"
+      </div>
+    </div>
+
+    <div class="char-item">
+      <span>故<span class="inline-pinyin">gù</span></span>
+      <div class="char-tooltip">
+        Союз "поэтому", "следовательно", "итак"; логическое заключение
+      </div>
+    </div>
+  </div>
+
+  <h2>Грамматические конструкции</h2>
+
+  <h3>1. Конструкция с 者</h3>
+  <div class="example">
+    <strong>學者</strong> — "тот, кто учится" (учёный)<br>
+    <strong>來者</strong> — "тот, кто приходит" (приходящий)<br>
+    <strong>見者</strong> — "тот, кто видит" (видящий)
+  </div>
+
+  <h3>2. Конструкция с 所</h3>
+  <div class="example">
+    <strong>所見</strong> — "то, что видится" (увиденное)<br>
+    <strong>所聞</strong> — "то, что слышится" (услышанное)<br>
+    <strong>所言</strong> — "то, что говорится" (сказанное)
+  </div>
+
+  <h3>3. Сложные предложения с 而</h3>
+  <div class="example">
+    <strong>學而時習之</strong> — "Учись и постоянно повторяй это"<br>
+    <strong>溫故而知新</strong> — "Повторяя старое, узнаёшь новое"
+  </div>
+
+  <h3>4. Условные предложения с 若</h3>
+  <div class="example">
+    <strong>若天不下雨</strong> — "Если небо не даст дождя"<br>
+    <strong>若王來</strong> — "Если царь придёт"
+  </div>
+
+  <h2>Практические примеры</h2>
+
+  <div class="note">
+    <strong>Важно:</strong> В древнекитайском языке порядок слов часто определяет грамматическую функцию. Обращайте внимание на контекст и положение слов в предложении.
+  </div>
+
+  <h3>Примеры сложных предложений:</h3>
+  <ul>
+    <li><strong>王見而喜之</strong> — "Царь увидел и обрадовался этому"</li>
+    <li><strong>學者以時習之</strong> — "Учёный своевременно повторяет это"</li>
+    <li><strong>雖難而易之</strong> — "Хотя трудно, но легко"</li>
+    <li><strong>故君子慎之</strong> — "Поэтому благородный муж осторожен в этом"</li>
+  </ul>
+
+  <h2>Домашнее задание</h2>
+  <p>Попробуйте составить несколько предложений, используя новые грамматические конструкции. Обратите внимание на порядок слов и логические связи между частями предложения.</p>
+
+  <div class="note">
+    <strong>Совет:</strong> Начните с простых конструкций и постепенно усложняйте их. Практика — лучший способ освоить грамматику древнекитайского языка.
+  </div>
+</body>
+</html>
