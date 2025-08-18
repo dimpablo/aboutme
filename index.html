@@ -488,20 +488,68 @@
       }
     }
 
-    /* Волнообразное расположение уроков */
+    /* Волнообразное расположение уроков (вертикальные кружочки) */
     .lesson-unit {
       position: relative;
-      margin: 4rem 0;
-      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 3rem 0;
+      padding: 0.5rem 0 0.5rem 0.5rem;
+    }
+
+    .unit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .unit-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform 0.4s ease-out;
       will-change: transform;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 25px;
-      padding: 1rem;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      animation: slideInFromBottom 1s ease-out both;
-      transform-origin: center;
-      text-align: center;
+    }
+
+    .unit-num {
+      min-width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #1976d2;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid rgba(25,118,210,0.2);
+    }
+
+    .unit-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #1976d2;
+      background: radial-gradient( circle at 30% 30%, #ffffff, #e3f2fd );
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+      border: 2px solid rgba(25,118,210,0.25);
+      font-size: 1.4rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .unit-circle:hover {
+      transform: scale(1.06);
+      box-shadow: 0 12px 22px rgba(0,0,0,0.18);
+    }
+
+    .unit-label {
+      font-size: 1.05rem;
+      color: #123;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.25);
     }
 
     @keyframes slideInFromBottom {
@@ -527,20 +575,9 @@
     }
 
     .lesson-header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      animation: slideInFromLeft 1s ease-out both;
-      transform-origin: center;
-      text-align: center;
+      background: transparent;
+      padding: 0.2rem 0.5rem;
+      margin-bottom: 0.8rem;
     }
 
     @keyframes slideInFromLeft {
@@ -568,19 +605,11 @@
     }
 
     .lesson-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #1976d2;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, #1976d2, #42a5f5);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      position: relative;
-      z-index: 1;
-      animation: textGlow 2s ease-in-out infinite alternate;
-      transform-origin: center;
-      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #e9f2ff;
+      margin-left: 10px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.25);
     }
 
     @keyframes textGlow {
@@ -592,32 +621,13 @@
       }
     }
 
-    .lesson-description {
-      color: #666;
-      font-size: 1rem;
-      transition: color 0.3s ease;
-      position: relative;
-      z-index: 1;
-      animation: fadeInUp 1s ease-out both;
-      transform-origin: center;
-      text-align: center;
-    }
+    .lesson-description { display: none; }
 
     .lesson-unit:hover .lesson-description {
       color: #1976d2;
     }
 
-    .lesson-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-      position: relative;
-      z-index: 1;
-      animation: slideInFromRight 1s ease-out both;
-      transform-origin: center;
-      text-align: center;
-    }
+    .lesson-cards { display: none; }
 
     @keyframes slideInFromRight {
       from {
@@ -1045,127 +1055,122 @@
     <!-- Контейнер для уроков -->
     <div class="lessons-container" id="lessons-container">
       <!-- Урок 1 -->
-      <div class="lesson-unit" style="transform: translateX(0px);">
+      <div class="lesson-unit">
         <div class="lesson-header">
           <h2 class="lesson-title">Урок 1. Гадание о дожде</h2>
-          <p class="lesson-description">Основы архаического древнекитайского языка</p>
         </div>
-        <div class="lesson-cards">
-          <a href="./lesson1/theory.html" class="lesson-card">
-            <span class="card-icon">📚</span>
-            <h3 class="card-title">Теория</h3>
-            <p class="card-description">Изучите теоретические основы и грамматику</p>
-          </a>
-          <a href="./lesson1/hanzi.html" class="lesson-card">
-            <span class="card-icon">🪶</span>
-            <h3 class="card-title">Иероглифы</h3>
-            <p class="card-description">Практикуйте написание иероглифов</p>
-          </a>
-          <a href="./lesson1/index.html" class="lesson-card">
-            <span class="card-icon">📝</span>
-            <h3 class="card-title">Задания</h3>
-            <p class="card-description">Выполните практические упражнения</p>
-          </a>
+        <div class="unit-list">
+          <div class="unit-item">
+            <div class="unit-num">1</div>
+            <a class="unit-circle" href="./lesson1/theory.html" title="Теория">📚</a>
+            <div class="unit-label">Теория</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">1</div>
+            <a class="unit-circle" href="./lesson1/hanzi.html" title="Иероглифы">🪶</a>
+            <div class="unit-label">Иероглифы</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">1</div>
+            <a class="unit-circle" href="./lesson1/index.html" title="Задания">📝</a>
+            <div class="unit-label">Задания</div>
+          </div>
         </div>
       </div>
 
       <!-- Урок 2 -->
-      <div class="lesson-unit" style="transform: translateX(0px);">
+      <div class="lesson-unit">
         <div class="lesson-header">
           <h2 class="lesson-title">Урок 2. Прямое дополнение и определение</h2>
-          <p class="lesson-description">Углубленное изучение грамматических конструкций</p>
         </div>
-        <div class="lesson-cards">
-          <a href="./lesson2/theory.html" class="lesson-card">
-            <span class="card-icon">📚</span>
-            <h3 class="card-title">Теория</h3>
-            <p class="card-description">Изучите теоретические основы и грамматику</p>
-          </a>
-          <a href="./lesson2/hanzi.html" class="lesson-card">
-            <span class="card-icon">🪶</span>
-            <h3 class="card-title">Иероглифы</h3>
-            <p class="card-description">Практикуйте написание иероглифов</p>
-          </a>
-          <a href="./lesson2/index.html" class="lesson-card">
-            <span class="card-icon">📝</span>
-            <h3 class="card-title">Задания</h3>
-            <p class="card-description">Выполните практические упражнения</p>
-          </a>
+        <div class="unit-list">
+          <div class="unit-item">
+            <div class="unit-num">2</div>
+            <a class="unit-circle" href="./lesson2/theory.html" title="Теория">📚</a>
+            <div class="unit-label">Теория</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">2</div>
+            <a class="unit-circle" href="./lesson2/hanzi.html" title="Иероглифы">🪶</a>
+            <div class="unit-label">Иероглифы</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">2</div>
+            <a class="unit-circle" href="./lesson2/index.html" title="Задания">📝</a>
+            <div class="unit-label">Задания</div>
+          </div>
         </div>
       </div>
 
       <!-- Урок 3 -->
-      <div class="lesson-unit" style="transform: translateX(0px);">
+      <div class="lesson-unit">
         <div class="lesson-header">
           <h2 class="lesson-title">Урок 3. Предлог 于 и косвенные дополнения</h2>
-          <p class="lesson-description">Изучение предлогов и дополнений</p>
         </div>
-        <div class="lesson-cards">
-          <a href="./lesson3/theory.html" class="lesson-card">
-            <span class="card-icon">📚</span>
-            <h3 class="card-title">Теория</h3>
-            <p class="card-description">Изучите теоретические основы и грамматику</p>
-          </a>
-          <a href="./lesson3/hanzi.html" class="lesson-card">
-            <span class="card-icon">🪶</span>
-            <h3 class="card-title">Иероглифы</h3>
-            <p class="card-description">Практикуйте написание иероглифов</p>
-          </a>
-          <a href="./lesson3/index.html" class="lesson-card">
-            <span class="card-icon">📝</span>
-            <h3 class="card-title">Задания</h3>
-            <p class="card-description">Выполните практические упражнения</p>
-          </a>
+        <div class="unit-list">
+          <div class="unit-item">
+            <div class="unit-num">3</div>
+            <a class="unit-circle" href="./lesson3/theory.html" title="Теория">📚</a>
+            <div class="unit-label">Теория</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">3</div>
+            <a class="unit-circle" href="./lesson3/hanzi.html" title="Иероглифы">🪶</a>
+            <div class="unit-label">Иероглифы</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">3</div>
+            <a class="unit-circle" href="./lesson3/index.html" title="Задания">📝</a>
+            <div class="unit-label">Задания</div>
+          </div>
         </div>
       </div>
 
       <!-- Урок 4 -->
-      <div class="lesson-unit" style="transform: translateX(0px);">
+      <div class="lesson-unit">
         <div class="lesson-header">
           <h2 class="lesson-title">Урок 4. Предлог 自 и конструкция 自...至于</h2>
-          <p class="lesson-description">Временные и пространственные рамки</p>
         </div>
-        <div class="lesson-cards">
-          <a href="./lesson4/theory.html" class="lesson-card">
-            <span class="card-icon">📚</span>
-            <h3 class="card-title">Теория</h3>
-            <p class="card-description">Изучите теоретические основы и грамматику</p>
-          </a>
-          <a href="./lesson4/hanzi.html" class="lesson-card">
-            <span class="card-icon">🪶</span>
-            <h3 class="card-title">Иероглифы</h3>
-            <p class="card-description">Практикуйте написание иероглифов</p>
-          </a>
-          <a href="./lesson4/index.html" class="lesson-card">
-            <span class="card-icon">📝</span>
-            <h3 class="card-title">Задания</h3>
-            <p class="card-description">Выполните практические упражнения</p>
-          </a>
+        <div class="unit-list">
+          <div class="unit-item">
+            <div class="unit-num">4</div>
+            <a class="unit-circle" href="./lesson4/theory.html" title="Теория">📚</a>
+            <div class="unit-label">Теория</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">4</div>
+            <a class="unit-circle" href="./lesson4/hanzi.html" title="Иероглифы">🪶</a>
+            <div class="unit-label">Иероглифы</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">4</div>
+            <a class="unit-circle" href="./lesson4/index.html" title="Задания">📝</a>
+            <div class="unit-label">Задания</div>
+          </div>
         </div>
       </div>
 
       <!-- Урок 5 -->
-      <div class="lesson-unit" style="transform: translateX(0px);">
+      <div class="lesson-unit">
         <div class="lesson-header">
           <h2 class="lesson-title">Урок 5. Предикативы с двойным дополнением и инверсия</h2>
-          <p class="lesson-description">Сложные грамматические конструкции</p>
         </div>
-        <div class="lesson-cards">
-          <a href="./lesson5/theory.html" class="lesson-card">
-            <span class="card-icon">📚</span>
-            <h3 class="card-title">Теория</h3>
-            <p class="card-description">Изучите теоретические основы и грамматику</p>
-          </a>
-          <a href="./lesson5/hanzi.html" class="lesson-card">
-            <span class="card-icon">🪶</span>
-            <h3 class="card-title">Иероглифы</h3>
-            <p class="card-description">Практикуйте написание иероглифов</p>
-          </a>
-          <a href="./lesson5/index.html" class="lesson-card">
-            <span class="card-icon">📝</span>
-            <h3 class="card-title">Задания</h3>
-            <p class="card-description">Выполните практические упражнения</p>
-          </a>
+        <div class="unit-list">
+          <div class="unit-item">
+            <div class="unit-num">5</div>
+            <a class="unit-circle" href="./lesson5/theory.html" title="Теория">📚</a>
+            <div class="unit-label">Теория</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">5</div>
+            <a class="unit-circle" href="./lesson5/hanzi.html" title="Иероглифы">🪶</a>
+            <div class="unit-label">Иероглифы</div>
+          </div>
+          <div class="unit-item">
+            <div class="unit-num">5</div>
+            <a class="unit-circle" href="./lesson5/index.html" title="Задания">📝</a>
+            <div class="unit-label">Задания</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1247,40 +1252,23 @@
       }
     }
 
-    // 🌊 Волнообразное расположение юнитов (восстановлено!)
+    // 🌊 Волнообразное расположение юнитов: синусоидальный сдвиг по X у кружков
     function applyWaveEffect() {
-      const units = document.querySelectorAll('.lesson-unit');
+      const unitItems = document.querySelectorAll('.unit-list .unit-item');
       const container = document.getElementById('lessons-container');
-      if (!container) return;
-      
+      if (!container || !unitItems.length) return;
+
       const containerRect = container.getBoundingClientRect();
       const containerTop = containerRect.top + window.scrollY;
-      const containerHeight = containerRect.height;
-      
-      units.forEach((unit, index) => {
-        // Создаем синусоидальную волну
-        const unitRect = unit.getBoundingClientRect();
-        const unitTop = unitRect.top + window.scrollY;
-        
-        // Вычисляем позицию относительно контейнера уроков
-        const relativePosition = (unitTop - containerTop) / containerHeight;
-        
-        // Создаем волну с разными параметрами для каждого юнита
-        const amplitude = 120 + (index * 10); // Увеличиваем амплитуду для каждого следующего юнита
-        const frequency = 2 * Math.PI; // Полный цикл
-        const phase = index * (Math.PI / 3); // Сдвиг фазы для каждого юнита
-        
-        // Вычисляем смещение по X
-        const waveX = amplitude * Math.sin(frequency * relativePosition + phase);
-        
-        // Добавляем небольшое смещение по Y для более естественного вида
-        const waveY = 20 * Math.sin(frequency * relativePosition * 2 + phase);
-        
-        // Применяем трансформацию
-        unit.style.transform = `translate(${waveX}px, ${waveY}px)`;
-        
-        // Добавляем плавную анимацию
-        unit.style.transition = 'transform 0.6s ease-out';
+
+      unitItems.forEach((row, idx) => {
+        const rect = row.getBoundingClientRect();
+        const y = rect.top + window.scrollY - containerTop;
+        const amplitude = 90;      // амплитуда синусоиды
+        const frequency = 0.008;   // частота (чуть-чуть смещаем)
+        const phase = idx * 0.6;   // фаза — смещение для «спирали»
+        const x = amplitude * Math.sin(frequency * y + phase);
+        row.style.transform = `translateX(${x.toFixed(1)}px)`;
       });
     }
 
