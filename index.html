@@ -304,21 +304,7 @@
       }
     }
 
-    .hero-section {
-      text-align: center;
-      margin-bottom: 4rem;
-      color: white;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 4rem 2rem;
-      border-radius: 20px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      z-index: 1;
-      animation: heroSectionGlow 2s ease-in-out infinite alternate;
-      transform-origin: center;
-    }
+    .hero-section { display: none; }
 
     @keyframes heroSectionGlow {
       from {
@@ -466,17 +452,12 @@
     /* Контейнер для уроков */
     .lessons-container {
       position: relative;
-      min-height: 800px;
-      overflow: visible;
-      padding: 2rem 0;
-      background: linear-gradient(135deg, 
-        rgba(25, 118, 210, 0.02) 0%, 
-        rgba(76, 175, 80, 0.02) 50%, 
-        rgba(25, 118, 210, 0.02) 100%);
-      border-radius: 25px;
-      animation: fadeIn 1s ease-out 1s both;
-      transform-origin: center;
-      text-align: center;
+      min-height: 80vh;
+      padding: 1rem 0 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
     }
 
     @keyframes fadeIn {
@@ -491,27 +472,34 @@
     /* Волнообразное расположение уроков (вертикальные кружочки) */
     .lesson-unit {
       position: relative;
-      margin: 3rem 0;
-      padding: 0.5rem 0 0.5rem 0.5rem;
+      margin: 1.5rem 0;
+      padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+      width: 100%;
+      max-width: 520px;
     }
 
     .unit-list {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 12px;
+      margin: 0 auto;
     }
 
     .unit-item {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto auto 1fr;
       align-items: center;
-      gap: 12px;
-      transition: transform 0.4s ease-out;
+      gap: 10px;
+      transition: transform 0.25s ease-out;
       will-change: transform;
+      pointer-events: none; /* группа не перехватывает события */
     }
 
+    .unit-item > * { pointer-events: auto; } /* интеракция только у детей */
+
     .unit-num {
-      min-width: 34px;
-      height: 34px;
+      min-width: 26px;
+      height: 26px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.85);
       display: flex;
@@ -519,24 +507,26 @@
       justify-content: center;
       font-weight: 700;
       color: #1976d2;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border: 1px solid rgba(25,118,210,0.2);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      border: 1px solid rgba(25,118,210,0.18);
+      font-size: 0.85rem;
     }
 
     .unit-circle {
-      width: 56px;
-      height: 56px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       text-decoration: none;
       color: #1976d2;
-      background: radial-gradient( circle at 30% 30%, #ffffff, #e3f2fd );
-      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-      border: 2px solid rgba(25,118,210,0.25);
-      font-size: 1.4rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #e3f2fd);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      border: 2px solid rgba(25,118,210,0.22);
+      font-size: 1.2rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      touch-action: manipulation;
     }
 
     .unit-circle:hover {
@@ -545,11 +535,11 @@
     }
 
     .unit-label {
-      font-size: 1.05rem;
-      color: #123;
-      font-weight: 600;
+      font-size: 0.98rem;
+      color: #f8fbff;
+      font-weight: 700;
       letter-spacing: 0.2px;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.35);
     }
 
     @keyframes slideInFromBottom {
@@ -887,22 +877,7 @@
     }
 
     /* Прогресс-бар */
-    .progress-section {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 2rem;
-      margin: 2rem 0;
-      text-align: center;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      animation: slideInFromTop 1s ease-out both;
-      transform-origin: center;
-      text-align: center;
-    }
+    .progress-section { display: none; }
 
     @keyframes slideInFromTop {
       from {
@@ -1264,9 +1239,9 @@
       unitItems.forEach((row, idx) => {
         const rect = row.getBoundingClientRect();
         const y = rect.top + window.scrollY - containerTop;
-        const amplitude = 90;      // амплитуда синусоиды
-        const frequency = 0.008;   // частота (чуть-чуть смещаем)
-        const phase = idx * 0.6;   // фаза — смещение для «спирали»
+        const amplitude = 70;      // уменьшили амплитуду → тоньше волна
+        const frequency = 0.010;   // небольшое увеличение частоты
+        const phase = idx * 0.55;  // плавнее "спираль"
         const x = amplitude * Math.sin(frequency * y + phase);
         row.style.transform = `translateX(${x.toFixed(1)}px)`;
       });
@@ -1284,7 +1259,7 @@
     });
 
     // Периодическое обновление волнового эффекта
-    setInterval(applyWaveEffect, 100);
+    setInterval(applyWaveEffect, 160);
   </script>
 </body>
 </html>
