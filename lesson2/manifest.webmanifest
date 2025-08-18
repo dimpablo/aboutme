@@ -1,9 +1,0 @@
-{
-  "name": "Древнекитайский — Урок 2",
-  "short_name": "Урок 2",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#f8f9fa",
-  "theme_color": "#1976d2",
-  "icons": []
-}
